@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel Tazadores</title>
+<meta name="description" content="Panel para cafeterías de Tazadores: logo, datos, ubicación, estadísticas y QR de caja.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --noche: #12233a;
+    --panel: #172c45;
+    --panel2: #20395a;
+    --oro: #f2b43c;
+    --oro-osc: #3a2a0c;
+    --crema: #f7f1e6;
+    --papel: #fffdf8;
+    --tinta: #1d2a3a;
+    --suave: #5f6b7a;
+    --linea: #e4dccd;
+    --ok: #2f9e5b;
+    --error: #b4412b;
+    --rara: #2aa89b;
+    --epica: #8b5cd6;
+    --radio: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--crema);
+    color: var(--tinta);
+    font: 16px/1.5 Inter, system-ui, sans-serif;
+    min-height: 100vh;
+  }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  .oculto { display: none !important; }
+
+  /* Cabecera */
+  header {
+    background: var(--noche);
+    color: var(--crema);
+    padding: 14px 16px;
+    position: sticky; top: 0; z-index: 1000;
+  }
+  .barra { max-width: 1040px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+  .marca { display: flex; align-items: center; gap: 10px; font-family: Fraunces, Georgia, serif; font-weight: 700; font-size: 22px; letter-spacing: .2px; }
+  .marca .taza { width: 30px; height: 30px; border-radius: 50%; background: var(--oro); display: grid; place-items: center; }
+  .marca small { font-family: Inter, sans-serif; font-weight: 500; font-size: 13px; color: #b9c4d3; margin-left: 4px; }
+  .barra .esp { flex: 1; }
+  .barra .usuario { font-size: 13px; color: #b9c4d3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40vw; }
+  .btn-link { background: none; border: 0; color: var(--oro); cursor: pointer; font-weight: 600; padding: 6px 4px; }
+
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 64px; }
+
+  /* Tarjetas y formularios */
+  .tarjeta {
+    background: var(--papel); border: 1px solid var(--linea); border-radius: var(--radio);
+    padding: 22px; margin-bottom: 18px;
+  }
+  h1, h2, h3 { font-family: Fraunces, Georgia, serif; color: var(--noche); margin: 0 0 6px; line-height: 1.2; }
+  h1 { font-size: 30px; }
+  h2 { font-size: 22px; }
+  h3 { font-size: 17px; }
+  .sub { color: var(--suave); margin: 0 0 16px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 6px; color: var(--tinta); }
+  .ayuda { font-size: 13px; color: var(--suave); margin: 6px 0 0; }
+  input[type=text], input[type=email], input[type=password], input[type=tel], textarea {
+    width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid #d6ccba; background: #fff; font-size: 16px;
+  }
+  textarea { min-height: 84px; resize: vertical; }
+  input:focus, textarea:focus { outline: 2px solid var(--oro); outline-offset: 1px; border-color: transparent; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 18px; border-radius: 12px; border: 0; cursor: pointer; font-weight: 600;
+    background: var(--noche); color: var(--crema); min-height: 46px;
+  }
+  .btn:hover { filter: brightness(1.12); }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .btn.oro { background: var(--oro); color: var(--oro-osc); }
+  .btn.borde { background: transparent; color: var(--noche); border: 1px solid #cdbfa6; }
+  .btn.ancho { width: 100%; }
+  .fila { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .msg { font-size: 14px; min-height: 20px; margin: 10px 0 0; }
+  .msg.error { color: var(--error); }
+  .msg.ok { color: var(--ok); }
+
+  /* Acceso */
+  .acceso { max-width: 420px; margin: 4vh auto 0; }
+  .pestanas { display: flex; background: #efe7d8; border-radius: 12px; padding: 4px; margin-bottom: 8px; }
+  .pestanas button { flex: 1; border: 0; background: transparent; padding: 10px; border-radius: 9px; cursor: pointer; font-weight: 600; color: var(--suave); }
+  .pestanas button[aria-selected=true] { background: #fff; color: var(--noche); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+
+  /* Lista de cafeterías */
+  .lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .item {
+    display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;
+    background: var(--papel); border: 1px solid var(--linea); border-radius: 12px; padding: 12px; cursor: pointer;
+  }
+  .item:hover { border-color: var(--oro); }
+  .item .nom { font-weight: 600; line-height: 1.25; }
+  .item .det { font-size: 13px; color: var(--suave); }
+  .chip { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: #eee6d6; color: var(--suave); }
+  .chip.ok { background: #dff3e6; color: #1f6b3e; }
+  .chip.no { background: #f6e3dc; color: #8a3520; }
+  .codigo { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; letter-spacing: 1px; }
+
+  /* Medallón del logo (igual que en el juego) */
+  .medallon {
+    width: 72px; height: 72px; border-radius: 50%; flex: none;
+    background: #fff center/cover no-repeat; border: 5px solid var(--oro);
+    box-shadow: 0 0 0 2px #c58b1c inset;
+  }
+  .medallon.grande { width: 168px; height: 168px; border-width: 10px; }
+  .medallon.chico { width: 46px; height: 46px; border-width: 3px; }
+  .medallon.vacio { display: grid; place-items: center; color: #fff; font-family: Fraunces, serif; font-weight: 700; }
+
+  /* Editor */
+  .encabezado { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .encabezado .tit { flex: 1; min-width: 200px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+  .secciones { display: grid; grid-template-columns: 300px 1fr; gap: 18px; align-items: start; }
+  #mapa { height: 340px; border-radius: 12px; border: 1px solid var(--linea); z-index: 1; }
+  .interruptor { display: flex; align-items: center; gap: 12px; cursor: pointer; margin-top: 8px; }
+  .interruptor input { width: 46px; height: 26px; appearance: none; background: #cfc5b3; border-radius: 99px; position: relative; cursor: pointer; transition: background .15s; }
+  .interruptor input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .interruptor input:checked { background: var(--ok); }
+  .interruptor input:checked::after { left: 23px; }
+
+  .numeros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 6px 0 16px; }
+  .numero { background: #f6f0e4; border-radius: 12px; padding: 12px; }
+  .numero b { display: block; font-family: Fraunces, serif; font-size: 28px; color: var(--noche); line-height: 1.1; }
+  .numero span { font-size: 12px; color: var(--suave); }
+  .grafico { display: flex; align-items: flex-end; gap: 6px; height: 130px; padding: 0 2px; border-bottom: 1px solid var(--linea); }
+  .grafico .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .grafico .barra-v { width: 100%; max-width: 26px; background: var(--oro); border-radius: 4px 4px 0 0; min-height: 2px; }
+  .grafico .val { font-size: 11px; color: var(--suave); margin-bottom: 2px; }
+  .ejes { display: flex; gap: 6px; padding: 4px 2px 0; }
+  .ejes span { flex: 1; text-align: center; font-size: 10px; color: var(--suave); }
+
+  .carta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; background: var(--panel); color: var(--crema); border-radius: 12px; padding: 12px 14px; margin-top: 14px; }
+  .carta .rz { font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+  .carta .cn { font-family: Fraunces, serif; font-size: 18px; }
+  .carta .nota { font-size: 13px; color: #b9c4d3; margin-left: auto; max-width: 280px; }
+  @media (max-width: 760px) { .carta .nota { margin-left: 0; max-width: none; } }
+
+  /* QR de caja a pantalla completa */
+  #caja {
+    position: fixed; inset: 0; z-index: 2000; background: var(--crema);
+    display: grid; place-items: center; padding: 16px; text-align: center;
+  }
+  #qr { background: #fff; padding: 18px; border-radius: 18px; display: inline-grid; margin: 12px 0; }
+  #qr img, #qr canvas { width: min(72vw, 360px) !important; height: auto !important; }
+  .progreso { height: 6px; background: #e8dcc8; border-radius: 99px; overflow: hidden; max-width: 360px; margin: 0 auto 10px; }
+  .progreso div { height: 100%; background: var(--oro); width: 100%; transition: width 1s linear; }
+
+  .vacio-estado { text-align: center; padding: 26px 10px; color: var(--suave); }
+
+  @media (max-width: 760px) {
+    .secciones { grid-template-columns: 1fr; }
+    .grid2 { grid-template-columns: 1fr; }
+    .numeros { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 26px; }
+    .medallon.grande { width: 140px; height: 140px; }
+    .marca small, .barra .usuario { display: none; }
+  }
+  .pin { width: 34px; height: 34px; border-radius: 50% 50% 50% 0; background: var(--oro); border: 3px solid var(--noche); transform: rotate(-45deg); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+  .pin::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--noche); }
+</style>
+</head>
+<body>
+<header>
+  <div class="barra">
+    <div class="marca">
+      <span class="taza" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a2a0c" stroke-width="2.2" stroke-linecap="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/></svg>
+      </span>
+      Tazadores <small>Panel de cafeterías</small>
+    </div>
+    <div class="esp"></div>
+    <span class="usuario" id="usuario"></span>
+    <button class="btn-link oculto" id="salir">Salir</button>
+  </div>
+</header>
+
+<main>
+  <!-- Acceso -->
+  <section id="v-acceso" class="acceso oculto">
+    <div class="tarjeta">
+      <h1>Tu cafetería en Tazadores</h1>
+      <p class="sub">Sube tu logo, tu promoción y mira cuántos jugadores te visitan.</p>
+      <div class="pestanas" role="tablist">
+        <button role="tab" id="tab-entrar" aria-selected="true">Entrar</button>
+        <button role="tab" id="tab-crear" aria-selected="false">Crear cuenta</button>
+      </div>
+      <form id="f-acceso" autocomplete="on">
+        <div id="campo-nombre" class="oculto">
+          <label for="a-nombre">Tu nombre</label>
+          <input id="a-nombre" type="text" maxlength="24" autocomplete="nickname">
+        </div>
+        <label for="a-correo">Correo</label>
+        <input id="a-correo" type="email" required autocomplete="username">
+        <label for="a-clave">Contraseña</label>
+        <input id="a-clave" type="password" required minlength="6" autocomplete="current-password">
+        <button class="btn oro ancho" style="margin-top:18px" id="b-acceso" type="submit">Entrar</button>
+        <p class="ayuda">Puedes usar la misma cuenta que en el juego.</p>
+        <p class="msg" id="m-acceso" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Inicio: mis cafeterías / reclamar / administrador -->
+  <section id="v-inicio" class="oculto">
+    <div class="tarjeta" id="t-mias">
+      <h1>Mis cafeterías</h1>
+      <p class="sub" id="s-mias">Elige una para editarla.</p>
+      <div class="lista" id="l-mias"></div>
+    </div>
+
+    <div class="tarjeta">
+      <h2>Reclamar mi cafetería</h2>
+      <p class="sub">Escribe el código de 8 letras y números que te dio Tazadores.</p>
+      <form id="f-reclamar" class="fila">
+        <input id="r-codigo" type="text" maxlength="12" placeholder="Ej.: 17ABAD29" style="max-width:220px; text-transform:uppercase" required autocomplete="off" aria-label="Código de la cafetería">
+        <button class="btn" type="submit">Reclamar</button>
+      </form>
+      <p class="msg" id="m-reclamar" role="status"></p>
+    </div>
+
+    <div class="tarjeta oculto" id="t-admin">
+      <h2>Todas las cafeterías <span class="chip">Administrador</span></h2>
+      <p class="sub">Pásale a cada dueño su código para que reclame su cafetería.</p>
+      <div class="fila" style="margin-bottom:12px">
+        <input id="buscar" type="text" placeholder="Buscar…" style="max-width:280px" aria-label="Buscar cafetería">
+      </div>
+      <div class="lista" id="l-admin"></div>
+    </div>
+  </section>
+
+  <!-- Editor de una cafetería -->
+  <section id="v-editor" class="oculto">
+    <button class="btn-link" id="volver" style="color:var(--noche); padding-left:0">← Volver</button>
+
+    <div class="tarjeta">
+      <div class="encabezado">
+        <div class="medallon grande" id="e-medallon" role="img" aria-label="Logo de la cafetería"></div>
+        <div class="tit">
+          <h1 id="e-titulo">—</h1>
+          <p class="sub" id="e-estado"></p>
+          <div class="fila">
+            <label class="btn oro" style="margin:0" for="e-archivo">Subir logo</label>
+            <input id="e-archivo" type="file" accept="image/png,image/jpeg,image/webp" class="oculto">
+            <button class="btn borde" id="e-qr">Mostrar QR de caja</button>
+          </div>
+          <p class="ayuda">Logo cuadrado, PNG o JPG. Así se ve arriba del gimnasio en el juego.</p>
+          <p class="msg" id="m-logo" role="status"></p>
+        </div>
+      </div>
+      <div class="carta" id="e-carta"></div>
+    </div>
+
+    <div class="secciones">
+      <div class="tarjeta">
+        <h2>Visitas</h2>
+        <p class="sub">Check-ins de jugadores en tu cafetería.</p>
+        <div class="numeros" style="grid-template-columns:1fr 1fr">
+          <div class="numero"><b id="n-hoy">0</b><span>hoy</span></div>
+          <div class="numero"><b id="n-7">0</b><span>últimos 7 días</span></div>
+          <div class="numero"><b id="n-total">0</b><span>en total</span></div>
+          <div class="numero"><b id="n-unicos">0</b><span>jugadores distintos</span></div>
+        </div>
+        <h3>Últimos 14 días</h3>
+        <div class="grafico" id="grafico" aria-label="Check-ins por día"></div>
+        <div class="ejes" id="ejes"></div>
+      </div>
+
+      <div>
+        <form class="tarjeta" id="f-datos">
+          <h2>Datos</h2>
+          <p class="sub">Lo que ven los jugadores al tocar tu cafetería.</p>
+          <label for="d-nombre">Nombre</label>
+          <input id="d-nombre" type="text" required maxlength="60">
+          <label for="d-desc">Descripción</label>
+          <textarea id="d-desc" maxlength="280"></textarea>
+          <div class="grid2">
+            <div>
+              <label for="d-dir">Dirección</label>
+              <input id="d-dir" type="text" maxlength="120">
+            </div>
+            <div>
+              <label for="d-horario">Horario</label>
+              <input id="d-horario" type="text" maxlength="160" placeholder="Lun a Sáb 08:00–21:00">
+            </div>
+            <div>
+              <label for="d-insta">Instagram</label>
+              <input id="d-insta" type="text" maxlength="60" placeholder="tucafeteria">
+            </div>
+            <div>
+              <label for="d-tel">Teléfono</label>
+              <input id="d-tel" type="tel" maxlength="30">
+            </div>
+          </div>
+          <label for="d-promo">Promoción para jugadores</label>
+          <input id="d-promo" type="text" maxlength="120" placeholder="10 % en filtrados con tu primer check-in">
+          <p class="ayuda">Aparece en la ficha de la cafetería dentro del juego.</p>
+          <div class="fila" style="margin-top:18px">
+            <button class="btn" type="submit">Guardar datos</button>
+          </div>
+          <p class="msg" id="m-datos" role="status"></p>
+        </form>
+
+        <div class="tarjeta">
+          <h2>Ubicación en el mapa</h2>
+          <p class="sub">Arrastra el pin hasta la puerta de tu cafetería. Los jugadores hacen check-in dentro del círculo.</p>
+          <div id="mapa"></div>
+          <div class="fila" style="margin-top:12px">
+            <button class="btn borde" id="u-aqui" type="button">Usar mi ubicación actual</button>
+            <button class="btn" id="u-guardar" type="button">Guardar ubicación</button>
+          </div>
+          <label class="interruptor"><input type="checkbox" id="u-visible"> <span>Visible en el juego</span></label>
+          <p class="ayuda">Actívalo cuando la ubicación esté bien puesta.</p>
+          <p class="msg" id="m-ubic" role="status"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- QR de caja -->
+<div id="caja" class="oculto" role="dialog" aria-modal="true" aria-labelledby="c-nombre">
+  <div>
+    <h1 id="c-nombre">—</h1>
+    <p class="sub">Escanea con la app Tazadores al pagar</p>
+    <div id="qr"></div>
+    <div class="progreso"><div id="c-prog"></div></div>
+    <p class="ayuda">El código cambia solo cada 45 segundos. Deja esta pantalla abierta en la caja.</p>
+    <p class="msg error" id="m-caja"></p>
+    <button class="btn borde" id="c-cerrar" style="margin-top:8px">Cerrar</button>
+  </div>
+</div>
+
+<script>
+  // Proyecto Supabase de Tazadores (la clave publicable es segura en páginas públicas).
+  const SUPABASE_URL = "https://tisciaidwaabdcgihftk.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_erGOdr7CeqoG3ujsxDG9DA_dnKcG0Mu";
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const $ = (id) => document.getElementById(id);
+  const mostrar = (id, si) => $(id).classList.toggle("oculto", !si);
+  const msg = (id, texto, tipo) => { const e = $(id); e.textContent = texto || ""; e.className = "msg " + (tipo || ""); };
+  const PALETA = ["#6F4E37", "#B5523B", "#2F6E5E", "#1F4E79", "#8A3B5C", "#C27C2C", "#4B3F72", "#2E7D4F"];
+  const RAREZA = { comun: ["Común", "#c9b48d"], rara: ["Rara", "#4fd1c5"], epica: ["Épica", "#c590ff"] };
+
+  let sesion = null, esAdmin = false, actual = null, mapa = null, pin = null, circulo = null;
+
+  // ---------------------------------------------------------------- Utilidades
+  function colorDe(nombre) {
+    let h = 0;
+    for (const c of nombre || "") h = (h * 31 + c.charCodeAt(0)) | 0;
+    return PALETA[Math.abs(h) % PALETA.length];
+  }
+  function pintarMedallon(el, lugar) {
+    if (lugar.photo_url) {
+      el.style.backgroundImage = `url("${lugar.photo_url.replace(/"/g, "%22")}")`;
+      el.classList.remove("vacio"); el.textContent = "";
+    } else {
+      el.style.backgroundImage = "none";
+      el.style.backgroundColor = colorDe(lugar.name);
+      el.classList.add("vacio");
+      el.textContent = (lugar.name || "?").trim().charAt(0).toUpperCase();
+    }
+  }
+  function textoError(e) {
+    const m = (e && (e.message || e.error_description)) || String(e);
+    if (/Invalid login/i.test(m)) return "Correo o contraseña incorrectos.";
+    if (/already registered/i.test(m)) return "Ese correo ya tiene cuenta. Entra con tu contraseña.";
+    if (/Email not confirmed/i.test(m)) return "Confirma tu correo (revisa tu bandeja) y vuelve a entrar.";
+    if (/Password should be/i.test(m)) return "La contraseña debe tener al menos 6 caracteres.";
+    if (/Failed to fetch|NetworkError/i.test(m)) return "Sin conexión. Revisa tu internet.";
+    return m;
+  }
+
+  // ---------------------------------------------------------------- Acceso
+  let modoCrear = false;
+  function modo(crear) {
+    modoCrear = crear;
+    $("tab-entrar").setAttribute("aria-selected", String(!crear));
+    $("tab-crear").setAttribute("aria-selected", String(crear));
+    mostrar("campo-nombre", crear);
+    $("b-acceso").textContent = crear ? "Crear cuenta" : "Entrar";
+    $("a-clave").autocomplete = crear ? "new-password" : "current-password";
+    msg("m-acceso");
+  }
+  $("tab-entrar").onclick = () => modo(false);
+  $("tab-crear").onclick = () => modo(true);
+
+  $("f-acceso").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const email = $("a-correo").value.trim(), password = $("a-clave").value;
+    $("b-acceso").disabled = true;
+    msg("m-acceso", modoCrear ? "Creando tu cuenta…" : "Entrando…");
+    try {
+      if (modoCrear) {
+        const nombre = $("a-nombre").value.trim();
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: nombre.length >= 3 ? { username: nombre } : {} } });
+        if (error) throw error;
+        if (!data.session) { msg("m-acceso", "Te enviamos un correo para confirmar tu cuenta. Después vuelve y entra.", "ok"); return; }
+      } else {
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      }
+    } catch (e) {
+      msg("m-acceso", textoError(e), "error");
+    } finally {
+      $("b-acceso").disabled = false;
+    }
+  });
+
+  $("salir").onclick = async () => { await sb.auth.signOut(); };
+
+  sb.auth.onAuthStateChange((_evento, s) => {
+    const antes = sesion && sesion.user.id;
+    sesion = s;
+    if (!s) { pantalla("acceso"); return; }
+    if (antes !== s.user.id) iniciar();
+  });
+
+  function pantalla(nombre) {
+    for (const v of ["acceso", "inicio", "editor"]) mostrar("v-" + v, v === nombre);
+    const dentro = nombre !== "acceso";
+    mostrar("salir", dentro);
+    $("usuario").textContent = dentro && sesion ? sesion.user.email : "";
+    window.scrollTo(0, 0);
+  }
+
+  // ---------------------------------------------------------------- Inicio
+  async function iniciar() {
+    pantalla("inicio");
+    const { data } = await sb.rpc("is_admin");
+    esAdmin = data === true;
+    await cargarMias();
+    mostrar("t-admin", esAdmin);
+    if (esAdmin) cargarAdmin();
+  }
+
+  function itemLugar(lugar, extra) {
+    const b = document.createElement("button");
+    b.className = "item"; b.type = "button";
+    const m = document.createElement("div"); m.className = "medallon chico";
+    pintarMedallon(m, lugar);
+    const t = document.createElement("div");
+    const n = document.createElement("div"); n.className = "nom"; n.textContent = lugar.name;
+    const d = document.createElement("div"); d.className = "det";
+    const chip = document.createElement("span");
+    chip.className = "chip " + (lugar.active ? "ok" : "no");
+    chip.textContent = lugar.active ? "Visible" : "Oculta";
+    d.append(chip);
+    if (extra) { const x = document.createElement("span"); x.innerHTML = " "; x.append(extra); d.append(x); }
+    t.append(n, d);
+    b.append(m, t);
+    b.onclick = () => abrir(lugar.id);
+    return b;
+  }
+
+  async function cargarMias() {
+    const lista = $("l-mias"); lista.innerHTML = "";
+    const { data, error } = await sb.from("places").select("*").eq("owner_id", sesion.user.id).order("name");
+    if (error) { lista.textContent = textoError(error); return; }
+    if (!data.length) {
+      $("s-mias").textContent = "Todavía no tienes cafeterías. Reclama la tuya con su código.";
+      return;
+    }
+    $("s-mias").textContent = data.length === 1 ? "Toca tu cafetería para editarla." : "Elige una para editarla.";
+    for (const l of data) lista.append(itemLugar(l));
+    if (data.length === 1 && !esAdmin && !iniciar.yaAbrio) { iniciar.yaAbrio = true; abrir(data[0].id); }
+  }
+
+  let todas = [];
+  async function cargarAdmin() {
+    const [{ data: codigos }, { data: lugares }] = await Promise.all([
+      sb.rpc("admin_claim_codes"),
+      sb.from("places").select("*").order("name"),
+    ]);
+    const porId = Object.fromEntries((codigos || []).map((c) => [c.place_id, c]));
+    todas = (lugares || []).map((l) => ({ ...l, _cod: porId[l.id] }));
+    pintarAdmin();
+  }
+  function pintarAdmin() {
+    const q = $("buscar").value.trim().toLowerCase();
+    const lista = $("l-admin"); lista.innerHTML = "";
+    for (const l of todas.filter((x) => !q || x.name.toLowerCase().includes(q))) {
+      const extra = document.createElement("span");
+      const cod = document.createElement("span"); cod.className = "codigo"; cod.textContent = l._cod ? l._cod.code : "—";
+      extra.append("Código ", cod);
+      if (l._cod && l._cod.owner_email) extra.append(" · " + l._cod.owner_email);
+      lista.append(itemLugar(l, extra));
+    }
+  }
+  $("buscar").addEventListener("input", pintarAdmin);
+
+  $("f-reclamar").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    msg("m-reclamar", "Revisando…");
+    const { data, error } = await sb.rpc("claim_place", { p_code: $("r-codigo").value.trim() });
+    if (error) { msg("m-reclamar", textoError(error), "error"); return; }
+    if (!data || !data.length) { msg("m-reclamar", "Código no válido. Revísalo y prueba de nuevo.", "error"); return; }
+    msg("m-reclamar", `¡Listo! Ahora administras ${data[0].name}.`, "ok");
+    $("r-codigo").value = "";
+    await cargarMias();
+    abrir(data[0].id);
+  });
+
+  // ---------------------------------------------------------------- Editor
+  $("volver").onclick = () => { pantalla("inicio"); cargarMias(); if (esAdmin) cargarAdmin(); };
+
+  async function abrir(id) {
+    const { data, error } = await sb.from("places").select("*").eq("id", id).single();
+    if (error) { alertar(textoError(error)); return; }
+    actual = data;
+    pantalla("editor");
+    for (const m of ["m-logo", "m-datos", "m-ubic"]) msg(m);
+    pintarEncabezado();
+    $("d-nombre").value = actual.name || "";
+    $("d-desc").value = actual.description || "";
+    $("d-dir").value = actual.address || "";
+    $("d-horario").value = actual.schedule || "";
+    $("d-insta").value = actual.instagram || "";
+    $("d-tel").value = actual.phone || "";
+    $("d-promo").value = actual.promo || "";
+    $("u-visible").checked = !!actual.active;
+    prepararMapa();
+    cargarEstadisticas();
+  }
+  function alertar(t) { msg("m-reclamar", t, "error"); }
+
+  function pintarEncabezado() {
+    pintarMedallon($("e-medallon"), actual);
+    $("e-titulo").textContent = actual.name;
+    $("e-estado").textContent = actual.active ? "Visible en el juego" : "Oculta: todavía no aparece en el juego";
+    const [rz, color] = RAREZA[actual.card_rarity] || RAREZA.comun;
+    const carta = $("e-carta"); carta.innerHTML = "";
+    const a = document.createElement("div");
+    const r = document.createElement("div"); r.className = "rz"; r.style.color = color; r.textContent = "CARTA " + rz.toUpperCase();
+    const n = document.createElement("div"); n.className = "cn"; n.textContent = actual.card_name;
+    a.append(r, n);
+    const txt = document.createElement("div"); txt.className = "nota";
+    txt.textContent = "La consiguen los jugadores al hacer check-in en tu cafetería.";
+    carta.append(a, txt);
+  }
+
+  $("f-datos").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const cambios = {
+      name: $("d-nombre").value.trim(),
+      description: $("d-desc").value.trim() || null,
+      address: $("d-dir").value.trim() || null,
+      schedule: $("d-horario").value.trim() || null,
+      instagram: $("d-insta").value.trim().replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/$/, "") || null,
+      phone: $("d-tel").value.trim() || null,
+      promo: $("d-promo").value.trim() || null,
+    };
+    await guardar(cambios, "m-datos", "Datos guardados.");
+  });
+
+  async function guardar(cambios, idMsg, ok) {
+    msg(idMsg, "Guardando…");
+    const { data, error } = await sb.from("places").update(cambios).eq("id", actual.id).select().single();
+    if (error) { msg(idMsg, textoError(error), "error"); return false; }
+    actual = data;
+    pintarEncabezado();
+    msg(idMsg, ok, "ok");
+    return true;
+  }
+
+  // Logo: se recorta a un cuadrado de 512 px y se sube a Storage.
+  $("e-archivo").addEventListener("change", async (ev) => {
+    const archivo = ev.target.files && ev.target.files[0];
+    ev.target.value = "";
+    if (!archivo) return;
+    if (archivo.size > 8 * 1024 * 1024) { msg("m-logo", "La imagen pesa más de 8 MB. Usa una más liviana.", "error"); return; }
+    msg("m-logo", "Subiendo logo…");
+    try {
+      const blob = await cuadrado(archivo, 512);
+      const ruta = `${actual.id}/logo-${Date.now()}.png`;
+      const { error } = await sb.storage.from("logos").upload(ruta, blob, { contentType: "image/png", cacheControl: "31536000", upsert: false });
+      if (error) throw error;
+      const { data } = sb.storage.from("logos").getPublicUrl(ruta);
+      const anterior = actual.photo_url;
+      if (await guardar({ photo_url: data.publicUrl }, "m-logo", "Logo actualizado. Ya se ve en el juego.")) {
+        // Borra el logo anterior si estaba en el bucket.
+        const marca = "/storage/v1/object/public/logos/";
+        if (anterior && anterior.includes(marca)) sb.storage.from("logos").remove([anterior.split(marca)[1]]);
+      }
+    } catch (e) {
+      msg("m-logo", textoError(e), "error");
+    }
+  });
+
+  function cuadrado(archivo, lado) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        c.width = c.height = lado;
+        const ctx = c.getContext("2d");
+        ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, lado, lado);
+        // Encaja el logo completo (sin cortarlo) dentro del cuadrado, centrado.
+        const s = Math.min(lado / img.width, lado / img.height);
+        const w = img.width * s, h = img.height * s;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, (lado - w) / 2, (lado - h) / 2, w, h);
+        URL.revokeObjectURL(img.src);
+        c.toBlob((b) => b ? resolve(b) : reject(new Error("No se pudo procesar la imagen.")), "image/png");
+      };
+      img.onerror = () => reject(new Error("No se pudo leer la imagen."));
+      img.src = URL.createObjectURL(archivo);
+    });
+  }
+
+  // Ubicación
+  function prepararMapa() {
+    const pos = [actual.lat, actual.lng];
+    if (!mapa) {
+      mapa = L.map("mapa", { scrollWheelZoom: false }).setView(pos, 18);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19, attribution: "© colaboradores de OpenStreetMap",
+      }).addTo(mapa);
+      const icono = L.divIcon({ className: "", html: '<div class="pin"></div>', iconSize: [34, 34], iconAnchor: [17, 40] });
+      pin = L.marker(pos, { draggable: true, icon: icono, title: "Tu cafetería" }).addTo(mapa);
+      circulo = L.circle(pos, { radius: 60, color: "#f2b43c", weight: 2, fillOpacity: 0.12 }).addTo(mapa);
+      pin.on("drag", () => circulo.setLatLng(pin.getLatLng()));
+      mapa.on("click", (e) => { pin.setLatLng(e.latlng); circulo.setLatLng(e.latlng); });
+    } else {
+      pin.setLatLng(pos); circulo.setLatLng(pos); mapa.setView(pos, 18);
+    }
+    circulo.setRadius(actual.checkin_radius_m || 60);
+    setTimeout(() => mapa.invalidateSize(), 50);
+  }
+
+  $("u-aqui").onclick = () => {
+    if (!navigator.geolocation) { msg("m-ubic", "Tu navegador no da la ubicación.", "error"); return; }
+    msg("m-ubic", "Buscando tu ubicación…");
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        const ll = [p.coords.latitude, p.coords.longitude];
+        pin.setLatLng(ll); circulo.setLatLng(ll); mapa.setView(ll, 18);
+        msg("m-ubic", `Listo (precisión ±${Math.round(p.coords.accuracy)} m). Revisa el pin y toca Guardar ubicación.`, "ok");
+      },
+      () => msg("m-ubic", "No se pudo obtener tu ubicación. Da permiso al navegador o mueve el pin a mano.", "error"),
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
+  };
+
+  $("u-guardar").onclick = async () => {
+    const ll = pin.getLatLng();
+    await guardar({ lat: +ll.lat.toFixed(7), lng: +ll.lng.toFixed(7) }, "m-ubic", "Ubicación guardada.");
+  };
+
+  $("u-visible").addEventListener("change", async (ev) => {
+    const ok = await guardar({ active: ev.target.checked }, "m-ubic", ev.target.checked ? "Tu cafetería ya aparece en el juego." : "Tu cafetería quedó oculta.");
+    if (!ok) ev.target.checked = !ev.target.checked;
+  });
+
+  // Estadísticas
+  async function cargarEstadisticas() {
+    const id = actual.id;
+    const [{ data: st }, { data: dias }] = await Promise.all([
+      sb.rpc("place_stats", { p_place: id }),
+      sb.rpc("place_daily", { p_place: id }),
+    ]);
+    if (!actual || actual.id !== id) return;
+    const s = (st && st[0]) || {};
+    $("n-hoy").textContent = s.checkins_today || 0;
+    $("n-7").textContent = s.checkins_7d || 0;
+    $("n-total").textContent = s.total_checkins || 0;
+    $("n-unicos").textContent = s.unique_players || 0;
+    const g = $("grafico"), ej = $("ejes"); g.innerHTML = ""; ej.innerHTML = "";
+    const lista = dias || [];
+    const max = Math.max(1, ...lista.map((d) => +d.checkins));
+    for (const d of lista) {
+      const col = document.createElement("div"); col.className = "col";
+      const v = document.createElement("div"); v.className = "val"; v.textContent = +d.checkins || "";
+      const b = document.createElement("div"); b.className = "barra-v"; b.style.height = (+d.checkins / max * 100) + "%";
+      b.title = `${d.day}: ${d.checkins} check-ins`;
+      col.append(v, b); g.append(col);
+      const e = document.createElement("span");
+      const f = new Date(d.day + "T12:00:00");
+      e.textContent = f.getDate();
+      ej.append(e);
+    }
+  }
+
+  // ---------------------------------------------------------------- QR de caja
+  let qr = null, tQr = null, tProg = null;
+  $("e-qr").onclick = () => { $("c-nombre").textContent = actual.name; mostrar("caja", true); cargarQr(); };
+  $("c-cerrar").onclick = () => { mostrar("caja", false); clearTimeout(tQr); clearInterval(tProg); };
+
+  async function cargarQr() {
+    clearTimeout(tQr); clearInterval(tProg);
+    try {
+      const { data, error } = await sb.functions.invoke("qr-token", { body: { placeId: actual.id } });
+      if (error) {
+        let m = "No se pudo obtener el QR.";
+        try { m = (await error.context.json()).message || m; } catch (_) {}
+        throw new Error(m);
+      }
+      if (!data.ok) throw new Error(data.message || "No se pudo obtener el QR.");
+      msg("m-caja");
+      if (!qr) qr = new QRCode($("qr"), { text: data.payload, width: 360, height: 360, correctLevel: QRCode.CorrectLevel.M });
+      else { qr.clear(); qr.makeCode(data.payload); }
+      const total = data.refreshInMs, inicio = Date.now();
+      const paso = () => { $("c-prog").style.width = Math.max(0, total - (Date.now() - inicio)) / total * 100 + "%"; };
+      paso(); tProg = setInterval(paso, 1000);
+      tQr = setTimeout(cargarQr, total + 300);
+    } catch (e) {
+      msg("m-caja", e.message + " Reintentando…", "error");
+      tQr = setTimeout(cargarQr, 5000);
+    }
+  }
+
+  // ---------------------------------------------------------------- Arranque
+  sb.auth.getSession().then(({ data }) => { if (!data.session) pantalla("acceso"); });
+</script>
+</body>
+</html>
