@@ -208,7 +208,16 @@
         <input id="a-clave" type="password" required minlength="6" autocomplete="current-password">
         <button class="btn oro ancho" style="margin-top:18px" id="b-acceso" type="submit">Entrar</button>
         <p class="ayuda">Puedes usar la misma cuenta que en el juego.</p>
+        <button class="btn-link" type="button" id="b-olvide" style="color:var(--noche); padding-left:0">¿Olvidaste tu contraseña?</button>
         <p class="msg" id="m-acceso" role="status"></p>
+      </form>
+      <form id="f-nueva" class="oculto">
+        <h2>Nueva contraseña</h2>
+        <p class="sub">Escribe tu nueva contraseña (mínimo 6 caracteres).</p>
+        <label for="n-clave">Nueva contraseña</label>
+        <input id="n-clave" type="password" required minlength="6" autocomplete="new-password">
+        <button class="btn oro ancho" style="margin-top:18px" type="submit">Guardar contraseña</button>
+        <p class="msg" id="m-nueva" role="status"></p>
       </form>
     </div>
   </section>
@@ -422,7 +431,36 @@
 
   $("salir").onclick = async () => { await sb.auth.signOut(); };
 
-  sb.auth.onAuthStateChange((_evento, s) => {
+  // Recuperar contraseña: se manda un correo con un enlace que vuelve a esta página.
+  $("b-olvide").onclick = async () => {
+    const email = $("a-correo").value.trim();
+    if (!email) { msg("m-acceso", "Escribe tu correo arriba y vuelve a tocar el enlace.", "error"); return; }
+    msg("m-acceso", "Enviando…");
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    if (error) { msg("m-acceso", textoError(error), "error"); return; }
+    msg("m-acceso", "Te enviamos un correo. Abre el enlace y crea tu nueva contraseña.", "ok");
+  };
+  let recuperando = false;
+  $("f-nueva").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    msg("m-nueva", "Guardando…");
+    const { error } = await sb.auth.updateUser({ password: $("n-clave").value });
+    if (error) { msg("m-nueva", textoError(error), "error"); return; }
+    recuperando = false;
+    mostrar("f-nueva", false); mostrar("f-acceso", true); document.querySelector(".pestanas").classList.remove("oculto");
+    msg("m-nueva");
+    iniciar();
+  });
+
+  sb.auth.onAuthStateChange((evento, s) => {
+    if (evento === "PASSWORD_RECOVERY") {
+      recuperando = true; sesion = s;
+      pantalla("acceso");
+      mostrar("f-acceso", false); document.querySelector(".pestanas").classList.add("oculto");
+      mostrar("f-nueva", true);
+      return;
+    }
+    if (recuperando) return;
     const antes = sesion && sesion.user.id;
     sesion = s;
     if (!s) { pantalla("acceso"); return; }
