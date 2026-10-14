@@ -165,6 +165,40 @@
   .reto { background: #f6f0e4; border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
   @media (max-width: 520px) { .casa { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
 
+  .planes { gap: 14px; margin: 10px 0; }
+  .plan-col { border: 1px solid var(--linea); border-radius: 12px; padding: 12px 16px; }
+  .plan-col h3 { margin: 0 0 6px; }
+  .plan-col ul { margin: 0; padding-left: 18px; color: var(--suave); font-size: 14px; }
+  .plan-col.premium { border: 2px solid var(--oro); background: #fff8e8; }
+  .plan-col.actual { box-shadow: 0 0 0 3px rgba(47,158,91,.25); }
+  .bloqueo { background: #fff8e8; border: 1px dashed var(--oro); border-radius: 12px; padding: 14px; color: var(--tinta); }
+  .reporte { border: 1px solid var(--linea); border-radius: 12px; padding: 12px; display: grid; grid-template-columns: 90px 1fr; gap: 12px; margin-bottom: 10px; background: var(--papel); }
+  .reporte img { width: 90px; height: 160px; object-fit: cover; border-radius: 8px; background: #eee; cursor: zoom-in; }
+  .reporte .sinfoto { width: 90px; height: 160px; border-radius: 8px; background: #eee; display: grid; place-items: center; color: var(--suave); font-size: 12px; text-align: center; }
+  .reporte .meta { font-size: 13px; color: var(--suave); }
+  .reporte p { margin: 6px 0; white-space: pre-wrap; }
+  #afiche { display: none; }
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    body { background: #fff; }
+    body > *:not(#afiche) { display: none !important; }
+    #afiche { display: block !important; }
+  }
+  #afiche .hoja { width: 210mm; height: 296mm; position: relative; overflow: hidden; background: #12233a; color: #fffdf8; font-family: Inter, sans-serif;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #afiche .marca-af { position: absolute; top: 14mm; left: 0; right: 0; text-align: center; font-family: Fraunces, serif; font-size: 22mm; font-weight: 700; color: #f2b43c; letter-spacing: 1px; }
+  #afiche .sub-af { position: absolute; top: 40mm; left: 0; right: 0; text-align: center; font-size: 6mm; color: #d8e0ea; }
+  #afiche .rayos { position: absolute; left: 50%; top: 118mm; width: 170mm; height: 170mm; transform: translate(-50%, -50%); border-radius: 50%;
+    background: radial-gradient(circle, rgba(242,180,60,.55) 0%, rgba(242,180,60,.12) 45%, rgba(242,180,60,0) 70%); }
+  #afiche svg.grano-af { position: absolute; left: 50%; top: 58mm; width: 105mm; height: 115mm; transform: translateX(-50%); }
+  #afiche .titulo-af { position: absolute; top: 178mm; left: 12mm; right: 12mm; text-align: center; font-family: Fraunces, serif; font-size: 13mm; line-height: 1.1; font-weight: 700; }
+  #afiche .texto-af { position: absolute; top: 208mm; left: 18mm; right: 18mm; text-align: center; font-size: 5.2mm; color: #d8e0ea; }
+  #afiche .pie-af { position: absolute; bottom: 12mm; left: 14mm; right: 14mm; display: flex; align-items: center; gap: 8mm; background: #fffdf8; color: #12233a; border-radius: 6mm; padding: 6mm; }
+  #afiche .pie-af .qr-af { width: 40mm; height: 40mm; flex: none; }
+  #afiche .pie-af .qr-af img, #afiche .pie-af .qr-af canvas { width: 40mm !important; height: 40mm !important; }
+  #afiche .pasos { display: grid; gap: 2.5mm; font-size: 4.6mm; }
+  #afiche .pasos b { color: #b5791a; }
+
   .vacio-estado { text-align: center; padding: 26px 10px; color: var(--suave); }
 
   @media (max-width: 760px) {
@@ -293,6 +327,18 @@
         <p class="msg" id="m-reto" role="status"></p>
       </form>
     </div>
+
+    <div class="tarjeta oculto" id="t-reportes">
+      <h2>Reportes de jugadores <span class="chip">Administrador</span></h2>
+      <p class="sub">Problemas que los jugadores enviaron desde el juego, con su captura de pantalla.</p>
+      <div class="fila" style="margin-bottom:12px">
+        <select id="r-filtro" aria-label="Filtrar reportes" style="max-width:220px">
+          <option value="nuevo">Nuevos</option><option value="visto">Vistos</option><option value="resuelto">Resueltos</option><option value="">Todos</option>
+        </select>
+        <button class="btn borde" type="button" id="r-recargar">Actualizar</button>
+      </div>
+      <div id="l-reportes"></div>
+    </div>
   </section>
 
   <!-- Editor de una cafetería -->
@@ -309,6 +355,7 @@
             <label class="btn oro" style="margin:0" for="e-archivo">Subir logo</label>
             <input id="e-archivo" type="file" accept="image/png,image/jpeg,image/webp" class="oculto">
             <button class="btn borde" id="e-qr">Mostrar QR de caja</button>
+            <button class="btn borde" id="e-afiche" type="button">Afiche para imprimir</button>
           </div>
           <p class="ayuda">Logo cuadrado, PNG o JPG. Así se ve arriba del gimnasio en el juego.</p>
           <p class="msg" id="m-logo" role="status"></p>
@@ -317,13 +364,47 @@
       <div class="carta" id="e-carta"></div>
     </div>
 
+    <div class="tarjeta" id="t-plan">
+      <h2>Tu plan: <span id="p-nombre">Gratis</span> <span class="chip" id="p-hasta"></span></h2>
+      <div class="grid2 planes">
+        <div class="plan-col" id="p-col-gratis">
+          <h3>Gratis</h3>
+          <ul>
+            <li>Tu cafetería en el mapa, con carta y QR de caja</li>
+            <li>1 aroma por día</li>
+            <li>1 cupón activo</li>
+            <li>Visitas de los últimos 14 días</li>
+            <li>Afiche para imprimir</li>
+          </ul>
+        </div>
+        <div class="plan-col premium" id="p-col-premium">
+          <h3>Premium ✦</h3>
+          <ul>
+            <li>Destacada en el mapa: aro dorado y primera en la lista</li>
+            <li>3 aromas por día</li>
+            <li>Cupones sin límite</li>
+            <li>Granito de la casa en tu puerta</li>
+            <li>Estadísticas completas: horas pico, clientes que vuelven, cupones canjeados</li>
+          </ul>
+        </div>
+      </div>
+      <p class="ayuda" id="p-pedir">Para pasarte a premium, escríbele al equipo de Tazadores.</p>
+      <form id="f-plan" class="fila oculto" style="margin-top:10px">
+        <select id="p-plan" aria-label="Plan" style="max-width:160px"><option value="gratis">Gratis</option><option value="premium">Premium</option></select>
+        <input id="p-fecha" type="date" aria-label="Premium hasta" style="max-width:190px">
+        <button class="btn" type="submit">Guardar plan</button>
+        <span class="chip">Administrador</span>
+      </form>
+      <p class="msg" id="m-plan" role="status"></p>
+    </div>
+
     <div class="tarjeta aroma">
       <div class="icono" aria-hidden="true">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 12h11v3a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5v-3Z"/><path d="M16 13h1.5a2 2 0 0 1 0 4H16"/><path d="M8 3c-1 1.5 1 2.5 0 4M11.5 2c-1 2 1 3 0 5M15 3c-1 1.5 1 2.5 0 4"/></svg>
       </div>
       <div class="tx">
         <h2>Aroma de cafetería</h2>
-        <p class="sub" style="margin:0">Durante 1 hora aparecen Granitos (algunos raros) alrededor de tu local y todos los jugadores cercanos lo ven en su mapa. Ideal para las horas flojas. Hasta 2 por día.</p>
+        <p class="sub" style="margin:0">Durante 1 hora aparecen Granitos (algunos raros) alrededor de tu local y todos los jugadores cercanos lo ven en su mapa. Ideal para las horas flojas. Plan gratis: 1 por día · Premium: 3 por día.</p>
         <p class="msg" id="m-aroma" role="status"></p>
       </div>
       <div style="text-align:center">
@@ -335,9 +416,9 @@
     <form class="tarjeta" id="f-casa">
       <h2>Granito de la casa</h2>
       <div class="casa">
-        <svg class="grano" id="c-grano" viewBox="0 0 100 100" role="img" aria-label="Vista previa del Granito de la casa">
+        <svg class="grano" id="ca-grano" viewBox="0 0 100 100" role="img" aria-label="Vista previa del Granito de la casa">
           <ellipse cx="50" cy="94" rx="26" ry="5" fill="rgba(0,0,0,.12)"/>
-          <ellipse id="c-cuerpo" cx="50" cy="52" rx="30" ry="38" fill="#8a5a3c"/>
+          <ellipse id="ca-cuerpo" cx="50" cy="52" rx="30" ry="38" fill="#8a5a3c"/>
           <path d="M50 18 C40 40, 60 62, 50 88" stroke="rgba(0,0,0,.28)" stroke-width="4" fill="none" stroke-linecap="round"/>
           <circle cx="40" cy="48" r="5" fill="#1d1d1d"/><circle cx="60" cy="48" r="5" fill="#1d1d1d"/>
           <circle cx="41.5" cy="46.5" r="1.6" fill="#fff"/><circle cx="61.5" cy="46.5" r="1.6" fill="#fff"/>
@@ -348,15 +429,16 @@
           <p class="sub" style="margin-top:0">Un Granito único de tu cafetería: solo se atrapa en tu puerta y cada jugador lo puede atrapar una vez. Le da a la gente un motivo para venir.</p>
           <div class="grid2">
             <div>
-              <label for="c-nombre">Nombre</label>
-              <input id="c-nombre" type="text" minlength="3" maxlength="30" placeholder="Granito Tostado">
+              <label for="ca-nombre">Nombre</label>
+              <input id="ca-nombre" type="text" minlength="3" maxlength="30" placeholder="Granito Tostado">
             </div>
             <div>
-              <label for="c-color">Color</label>
-              <input id="c-color" type="color" value="#8a5a3c" style="height:46px; padding:4px">
+              <label for="ca-color">Color</label>
+              <input id="ca-color" type="color" value="#8a5a3c" style="height:46px; padding:4px">
             </div>
           </div>
           <div class="fila" style="margin-top:14px"><button class="btn" type="submit">Guardar Granito</button></div>
+          <p class="ayuda oculto" id="ca-premium">Tu Granito aparece en la puerta solo con el plan premium. Puedes dejarlo listo desde ahora.</p>
           <p class="msg" id="m-casa" role="status"></p>
         </div>
       </div>
@@ -426,6 +508,8 @@
         <div class="ejes" id="ejes"></div>
 
         <h3 style="margin-top:22px">Cómo te va</h3>
+        <div class="bloqueo oculto" id="i-bloqueo"><b>Estadísticas completas en el plan premium.</b><br>Horas y días con más visitas, clientes que vuelven, cupones canjeados y Granitos atrapados cerca de tu local.</div>
+        <div id="i-datos">
         <div class="numeros" style="grid-template-columns:1fr 1fr">
           <div class="numero"><b id="i-vuelven">0</b><span>jugadores que volvieron</span></div>
           <div class="numero"><b id="i-nuevos">0</b><span>nuevos esta semana</span></div>
@@ -441,6 +525,7 @@
         <h3>Días de la semana (60 días)</h3>
         <div class="grafico chico" id="g-dias" aria-label="Check-ins por día de la semana"></div>
         <div class="ejes" id="e-dias"></div>
+        </div>
       </div>
 
       <div>
@@ -496,6 +581,25 @@
 </main>
 
 <!-- QR de caja -->
+<div id="afiche" aria-hidden="true">
+  <div class="hoja">
+    <div class="rayos"></div>
+    <div class="marca-af">TAZADORES</div>
+    <div class="sub-af">El juego de los Granitos de café de Tarija</div>
+    <svg class="grano-af" viewBox="0 0 100 110" id="af-grano"></svg>
+    <div class="titulo-af" id="af-titulo"></div>
+    <div class="texto-af" id="af-texto"></div>
+    <div class="pie-af">
+      <div class="qr-af" id="af-qr"></div>
+      <div class="pasos">
+        <div><b>1.</b> Escanea el código y descarga Tazadores.</div>
+        <div><b>2.</b> Camina por Tarija y atrapa Granitos.</div>
+        <div><b>3.</b> Haz check-in con el QR de la caja y gana tu carta, cupones y premios.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="caja" class="oculto" role="dialog" aria-modal="true" aria-labelledby="c-nombre">
   <div>
     <h1 id="c-nombre">—</h1>
@@ -639,6 +743,7 @@
     await cargarMias();
     mostrar("t-admin", esAdmin);
     mostrar("t-reto", esAdmin);
+    mostrar("t-reportes", esAdmin);
     if (esAdmin) cargarAdmin();
   }
 
@@ -705,6 +810,7 @@
 
   async function cargarAdmin() {
     cargarReto();
+    cargarReportes();
     const [{ data: codigos }, { data: lugares }] = await Promise.all([
       sb.rpc("admin_claim_codes"),
       sb.from("places").select("*").order("name"),
@@ -721,6 +827,7 @@
       const cod = document.createElement("span"); cod.className = "codigo"; cod.textContent = l._cod ? l._cod.code : "—";
       extra.append("Código ", cod);
       if (l._cod && l._cod.owner_email) extra.append(" · " + l._cod.owner_email);
+      if (esPremium(l)) extra.append(" · Premium ✦");
       lista.append(itemLugar(l, extra));
     }
   }
@@ -755,9 +862,9 @@
     $("d-insta").value = actual.instagram || "";
     $("d-tel").value = actual.phone || "";
     $("d-promo").value = actual.promo || "";
-    $("c-nombre").value = actual.house_name || "";
-    $("c-color").value = "#" + (actual.house_color || "8a5a3c");
-    $("c-nombre").placeholder = "Granito de " + (actual.name || "tu cafetería");
+    $("ca-nombre").value = actual.house_name || "";
+    $("ca-color").value = "#" + (actual.house_color || "8a5a3c");
+    $("ca-nombre").placeholder = "Granito de " + (actual.name || "tu cafetería");
     pintarGranoCasa();
     msg("m-casa");
     $("u-visible").checked = !!actual.active;
@@ -766,6 +873,7 @@
     cargarCupones();
     cargarEstadisticas();
     cargarInsights();
+    pintarPlan();
     prepararMapa();
   }
   function alertar(t) { msg("m-reclamar", t, "error"); }
@@ -927,14 +1035,132 @@
     }
   }
 
+  // ---------------------------------------------------------------- Plan
+  const DESCARGA_URL = "https://jorgeestrada1.github.io/tazadores-panel/descargar.html";
+  function esPremium(l) {
+    if (!l || l.plan !== "premium") return false;
+    if (!l.plan_until) return true;
+    return l.plan_until >= new Date().toLocaleDateString("en-CA", { timeZone: "America/La_Paz" });
+  }
+  function pintarPlan() {
+    const p = esPremium(actual);
+    $("p-nombre").textContent = p ? "Premium ✦" : "Gratis";
+    $("p-hasta").textContent = p && actual.plan_until ? "hasta el " + new Date(actual.plan_until + "T12:00:00").toLocaleDateString("es-BO", { day: "numeric", month: "long", year: "numeric" }) : "";
+    $("p-hasta").classList.toggle("oculto", !$("p-hasta").textContent);
+    $("p-col-premium").classList.toggle("actual", p);
+    $("p-col-gratis").classList.toggle("actual", !p);
+    mostrar("p-pedir", !p && !esAdmin);
+    mostrar("f-plan", esAdmin);
+    mostrar("ca-premium", !p);
+    $("p-plan").value = actual.plan || "gratis";
+    $("p-fecha").value = actual.plan_until || "";
+    msg("m-plan");
+  }
+  $("f-plan").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const plan = $("p-plan").value, hasta = $("p-fecha").value || null;
+    const { error } = await sb.rpc("set_place_plan", { p_place: actual.id, p_plan: plan, p_until: hasta });
+    if (error) { msg("m-plan", textoError(error), "error"); return; }
+    actual.plan = plan; actual.plan_until = plan === "premium" ? hasta : null;
+    pintarPlan(); cargarInsights();
+    msg("m-plan", plan === "premium" ? "Plan premium activado." : "Plan cambiado a gratis.", "ok");
+  });
+
+  // ---------------------------------------------------------------- Afiche
+  function svgGrano(color, corona) {
+    const c = color || "#8a5a3c";
+    const oscuro = "rgba(0,0,0,.28)";
+    return `
+      <ellipse cx="50" cy="104" rx="30" ry="5" fill="rgba(0,0,0,.25)"/>
+      <ellipse cx="30" cy="97" rx="11" ry="6" fill="#3a2414"/><ellipse cx="70" cy="97" rx="11" ry="6" fill="#3a2414"/>
+      <ellipse cx="14" cy="64" rx="7" ry="12" fill="${c}" transform="rotate(25 14 64)"/><ellipse cx="86" cy="64" rx="7" ry="12" fill="${c}" transform="rotate(-25 86 64)"/>
+      <ellipse cx="50" cy="56" rx="36" ry="44" fill="${c}"/>
+      <ellipse cx="38" cy="30" rx="10" ry="14" fill="rgba(255,255,255,.18)"/>
+      <path d="M50 16 C42 38, 58 66, 50 96" stroke="${oscuro}" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="37" cy="48" rx="9" ry="10.5" fill="#fffdf8"/><ellipse cx="63" cy="48" rx="9" ry="10.5" fill="#fffdf8"/>
+      <ellipse cx="37" cy="49.5" rx="6" ry="7.5" fill="#6b4423"/><ellipse cx="63" cy="49.5" rx="6" ry="7.5" fill="#6b4423"/>
+      <ellipse cx="37" cy="50" rx="3.6" ry="4.6" fill="#1a1210"/><ellipse cx="63" cy="50" rx="3.6" ry="4.6" fill="#1a1210"/>
+      <circle cx="34.5" cy="45" r="2.2" fill="#fff"/><circle cx="60.5" cy="45" r="2.2" fill="#fff"/>
+      <path d="M30 35 Q37 31 44 35" stroke="#2a1a12" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M56 35 Q63 31 70 35" stroke="#2a1a12" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="24" cy="63" rx="6" ry="3.5" fill="#ff8fa0" opacity=".75"/><ellipse cx="76" cy="63" rx="6" ry="3.5" fill="#ff8fa0" opacity=".75"/>
+      <path d="M42 62 Q50 74 58 62 Z" fill="#3e1216"/><path d="M45.5 68 Q50 72 54.5 68 Q50 66 45.5 68 Z" fill="#ec7c88"/>
+      ${corona
+        ? `<path d="M30 14 L34 2 L42 10 L50 0 L58 10 L66 2 L70 14 Z" fill="#f2c14e" stroke="#c9952a" stroke-width="1.2"/><circle cx="50" cy="9" r="2.4" fill="#e53935"/>`
+        : `<path d="M50 12 L51 4" stroke="#6b4e2e" stroke-width="2.4"/><ellipse cx="58" cy="3" rx="9" ry="3.6" fill="#43a047" transform="rotate(-20 58 3)"/>`}`;
+  }
+  $("e-afiche").onclick = () => {
+    const p = esPremium(actual);
+    const casa = actual.house_name || ("Granito de " + actual.name);
+    const color = "#" + (actual.house_color || "8a5a3c");
+    $("af-grano").innerHTML = svgGrano(p ? color : "#7a4a2b", p);
+    $("af-titulo").textContent = p ? `Aquí vive el ${casa}` : `¡En ${actual.name} hay Granitos!`;
+    $("af-texto").textContent = p
+      ? `Atrápalo en la puerta de ${actual.name} con el juego Tazadores. Solo vive aquí.`
+      : `Haz check-in en la caja de ${actual.name} y gana su carta en el juego Tazadores.`;
+    const qr = $("af-qr"); qr.innerHTML = "";
+    new QRCode(qr, { text: DESCARGA_URL, width: 512, height: 512, correctLevel: QRCode.CorrectLevel.M });
+    setTimeout(() => window.print(), 400);
+  };
+
+  // ---------------------------------------------------------------- Reportes de jugadores (admin)
+  const CATEGORIAS = { mapa: "Mapa / GPS", captura: "Captura", cafeterias: "Cafeterías", cuenta: "Cuenta", otro: "Otro" };
+  let reportes = [];
+  async function cargarReportes() {
+    mostrar("t-reportes", true);
+    const { data, error } = await sb.rpc("admin_reports");
+    if (error) { $("l-reportes").textContent = textoError(error); return; }
+    reportes = data || [];
+    pintarReportes();
+  }
+  async function pintarReportes() {
+    const f = $("r-filtro").value, lista = $("l-reportes");
+    lista.innerHTML = "";
+    const visibles = reportes.filter((r) => !f || r.status === f);
+    if (!visibles.length) { const v = document.createElement("div"); v.className = "vacio-estado"; v.textContent = "No hay reportes aquí."; lista.append(v); return; }
+    for (const r of visibles) {
+      const caja = document.createElement("div"); caja.className = "reporte";
+      let foto;
+      if (r.screenshot) {
+        foto = document.createElement("img"); foto.alt = "Captura del reporte";
+        sb.storage.from("reportes").createSignedUrl(r.screenshot, 3600).then(({ data }) => {
+          if (data && data.signedUrl) { foto.src = data.signedUrl; foto.onclick = () => window.open(data.signedUrl, "_blank"); }
+        });
+      } else { foto = document.createElement("div"); foto.className = "sinfoto"; foto.textContent = "Sin captura"; }
+      const tx = document.createElement("div");
+      const meta = document.createElement("div"); meta.className = "meta";
+      const fecha = new Date(r.createdAt).toLocaleString("es-BO", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+      meta.textContent = `${CATEGORIAS[r.category] || r.category} · ${r.player || "Jugador"} · ${fecha}`;
+      const p = document.createElement("p"); p.textContent = r.message;
+      const dev = document.createElement("div"); dev.className = "meta"; dev.textContent = [r.device, r.version && "v" + r.version].filter(Boolean).join(" · ");
+      const fila = document.createElement("div"); fila.className = "fila"; fila.style.marginTop = "8px";
+      for (const [estado, texto] of [["visto", "Marcar visto"], ["resuelto", "Resuelto"]]) {
+        if (r.status === estado) continue;
+        const b = document.createElement("button"); b.type = "button"; b.className = "btn borde"; b.textContent = texto;
+        b.onclick = async () => {
+          const { error } = await sb.from("problem_reports").update({ status: estado }).eq("id", r.id);
+          if (!error) { r.status = estado; pintarReportes(); }
+        };
+        fila.append(b);
+      }
+      const chip = document.createElement("span"); chip.className = "chip " + (r.status === "resuelto" ? "ok" : r.status === "nuevo" ? "no" : ""); chip.textContent = r.status;
+      fila.prepend(chip);
+      tx.append(meta, p, dev, fila);
+      caja.append(foto, tx);
+      lista.append(caja);
+    }
+  }
+  $("r-filtro").addEventListener("change", pintarReportes);
+  $("r-recargar").onclick = cargarReportes;
+
   // ---------------------------------------------------------------- Granito de la casa
-  function pintarGranoCasa() { $("c-cuerpo").setAttribute("fill", $("c-color").value); }
-  $("c-color").addEventListener("input", pintarGranoCasa);
+  function pintarGranoCasa() { $("ca-cuerpo").setAttribute("fill", $("ca-color").value); }
+  $("ca-color").addEventListener("input", pintarGranoCasa);
   $("f-casa").addEventListener("submit", async (ev) => {
     ev.preventDefault();
-    const nombre = $("c-nombre").value.trim();
+    const nombre = $("ca-nombre").value.trim();
     if (nombre && nombre.length < 3) { msg("m-casa", "El nombre necesita al menos 3 letras.", "error"); return; }
-    await guardar({ house_name: nombre || null, house_color: $("c-color").value.replace("#", "").toUpperCase() }, "m-casa",
+    await guardar({ house_name: nombre || null, house_color: $("ca-color").value.replace("#", "").toUpperCase() }, "m-casa",
       "Guardado. Los jugadores lo verán en tu puerta.");
   });
 
@@ -952,7 +1178,10 @@
   async function cargarInsights() {
     const id = actual.id;
     const { data: d, error } = await sb.rpc("place_insights", { p_place: id });
-    if (!actual || actual.id !== id || error || !d || !d.ok) return;
+    if (!actual || actual.id !== id || error || !d) return;
+    mostrar("i-bloqueo", !d.ok && d.code === "premium");
+    mostrar("i-datos", d.ok);
+    if (!d.ok) return;
     $("i-vuelven").textContent = d.returning;
     $("i-nuevos").textContent = d.newWeek;
     $("i-cupones").textContent = `${d.couponsClaimed} / ${d.couponsRedeemed}`;
@@ -996,7 +1225,7 @@
     if (!data.ok) { msg("m-aroma", data.message, "error"); if (data.until) { aromaHasta = new Date(data.until).getTime(); pintarAroma(); } return; }
     aromaHasta = new Date(data.until).getTime();
     pintarAroma();
-    msg("m-aroma", `¡Listo! Los Granitos ya están llegando a tu cafetería. (${data.usedToday} de 2 hoy)`, "ok");
+    msg("m-aroma", `¡Listo! Los Granitos ya están llegando a tu cafetería. (${data.usedToday} de ${data.max || 1} hoy)`, "ok");
   };
 
   // ---------------------------------------------------------------- Cupones
