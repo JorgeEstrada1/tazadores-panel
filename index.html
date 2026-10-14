@@ -158,6 +158,13 @@
   .progreso { height: 6px; background: #e8dcc8; border-radius: 99px; overflow: hidden; max-width: 360px; margin: 0 auto 10px; }
   .progreso div { height: 100%; background: var(--oro); width: 100%; transition: width 1s linear; }
 
+  .casa { display: grid; grid-template-columns: 120px 1fr; gap: 18px; align-items: center; }
+  .casa .grano { width: 110px; height: 110px; }
+  .grafico.chico { height: 90px; gap: 3px; }
+  .grafico.chico .barra-v { max-width: 18px; }
+  .reto { background: #f6f0e4; border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+  @media (max-width: 520px) { .casa { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+
   .vacio-estado { text-align: center; padding: 26px 10px; color: var(--suave); }
 
   @media (max-width: 760px) {
@@ -269,6 +276,23 @@
       </div>
       <div class="lista" id="l-admin"></div>
     </div>
+
+    <div class="tarjeta oculto" id="t-reto">
+      <h2>Reto de toda Tarija <span class="chip">Administrador</span></h2>
+      <p class="sub">Un objetivo entre todos los jugadores. Si se cumple, todos los que ayudaron ganan premio.</p>
+      <div class="reto" id="reto-actual">Cargando…</div>
+      <form id="f-reto">
+        <div class="grid2">
+          <div><label for="rt-titulo">Título</label><input id="rt-titulo" type="text" maxlength="60" required placeholder="Tarija atrapa 1.000 Granitos"></div>
+          <div><label for="rt-tipo">Qué se cuenta</label>
+            <select id="rt-tipo"><option value="capturas">Granitos atrapados</option><option value="checkins">Check-ins en cafeterías</option><option value="casas">Granitos de la casa</option></select></div>
+          <div><label for="rt-meta">Meta</label><input id="rt-meta" type="number" min="1" max="1000000" value="1000" required></div>
+          <div><label for="rt-dias">Días que dura</label><input id="rt-dias" type="number" min="1" max="60" value="14" required></div>
+        </div>
+        <div class="fila" style="margin-top:14px"><button class="btn" type="submit">Crear reto</button></div>
+        <p class="msg" id="m-reto" role="status"></p>
+      </form>
+    </div>
   </section>
 
   <!-- Editor de una cafetería -->
@@ -307,6 +331,36 @@
         <button class="btn" style="background:#e86fb0" id="a-activar" type="button">Activar aroma (1 hora)</button>
       </div>
     </div>
+
+    <form class="tarjeta" id="f-casa">
+      <h2>Granito de la casa</h2>
+      <div class="casa">
+        <svg class="grano" id="c-grano" viewBox="0 0 100 100" role="img" aria-label="Vista previa del Granito de la casa">
+          <ellipse cx="50" cy="94" rx="26" ry="5" fill="rgba(0,0,0,.12)"/>
+          <ellipse id="c-cuerpo" cx="50" cy="52" rx="30" ry="38" fill="#8a5a3c"/>
+          <path d="M50 18 C40 40, 60 62, 50 88" stroke="rgba(0,0,0,.28)" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="40" cy="48" r="5" fill="#1d1d1d"/><circle cx="60" cy="48" r="5" fill="#1d1d1d"/>
+          <circle cx="41.5" cy="46.5" r="1.6" fill="#fff"/><circle cx="61.5" cy="46.5" r="1.6" fill="#fff"/>
+          <path d="M43 60 Q50 66 57 60" stroke="#1d1d1d" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <ellipse cx="33" cy="58" rx="5" ry="3" fill="#ff9aa2" opacity=".7"/><ellipse cx="67" cy="58" rx="5" ry="3" fill="#ff9aa2" opacity=".7"/>
+        </svg>
+        <div>
+          <p class="sub" style="margin-top:0">Un Granito único de tu cafetería: solo se atrapa en tu puerta y cada jugador lo puede atrapar una vez. Le da a la gente un motivo para venir.</p>
+          <div class="grid2">
+            <div>
+              <label for="c-nombre">Nombre</label>
+              <input id="c-nombre" type="text" minlength="3" maxlength="30" placeholder="Granito Tostado">
+            </div>
+            <div>
+              <label for="c-color">Color</label>
+              <input id="c-color" type="color" value="#8a5a3c" style="height:46px; padding:4px">
+            </div>
+          </div>
+          <div class="fila" style="margin-top:14px"><button class="btn" type="submit">Guardar Granito</button></div>
+          <p class="msg" id="m-casa" role="status"></p>
+        </div>
+      </div>
+    </form>
 
     <div class="tarjeta">
       <h2>Cupones</h2>
@@ -370,6 +424,23 @@
         <h3>Últimos 14 días</h3>
         <div class="grafico" id="grafico" aria-label="Check-ins por día"></div>
         <div class="ejes" id="ejes"></div>
+
+        <h3 style="margin-top:22px">Cómo te va</h3>
+        <div class="numeros" style="grid-template-columns:1fr 1fr">
+          <div class="numero"><b id="i-vuelven">0</b><span>jugadores que volvieron</span></div>
+          <div class="numero"><b id="i-nuevos">0</b><span>nuevos esta semana</span></div>
+          <div class="numero"><b id="i-cupones">0 / 0</b><span>cupones obtenidos / canjeados</span></div>
+          <div class="numero"><b id="i-cerca">0</b><span>Granitos atrapados cerca (30 días)</span></div>
+          <div class="numero"><b id="i-casa">0</b><span>atraparon tu Granito de la casa</span></div>
+          <div class="numero"><b id="i-aromas">0</b><span>aromas activados (30 días)</span></div>
+        </div>
+        <h3>Horas con más visitas (30 días)</h3>
+        <div class="grafico chico" id="g-horas" aria-label="Check-ins por hora"></div>
+        <div class="ejes" id="e-horas"></div>
+        <p class="ayuda" id="i-pico"></p>
+        <h3>Días de la semana (60 días)</h3>
+        <div class="grafico chico" id="g-dias" aria-label="Check-ins por día de la semana"></div>
+        <div class="ejes" id="e-dias"></div>
       </div>
 
       <div>
@@ -567,6 +638,7 @@
     esAdmin = data === true;
     await cargarMias();
     mostrar("t-admin", esAdmin);
+    mostrar("t-reto", esAdmin);
     if (esAdmin) cargarAdmin();
   }
 
@@ -603,7 +675,36 @@
   }
 
   let todas = [];
+  async function cargarReto() {
+    $("t-reto").classList.remove("oculto");
+    const { data, error } = await sb.rpc("city_challenge");
+    const caja = $("reto-actual");
+    if (error) { caja.textContent = textoError(error); return; }
+    if (!data) { caja.textContent = "No hay ningún reto activo."; return; }
+    const pct = Math.min(100, Math.round(data.progress / data.goal * 100));
+    const fin = new Date(data.endsAt).toLocaleDateString("es-BO", { day: "numeric", month: "long" });
+    caja.innerHTML = "";
+    const b = document.createElement("b"); b.textContent = data.title;
+    const p = document.createElement("div"); p.className = "ayuda"; p.textContent = `${data.progress} de ${data.goal} (${pct} %) · termina el ${fin}`;
+    const barra = document.createElement("div"); barra.className = "progreso"; barra.style.margin = "8px 0 0"; barra.style.maxWidth = "none";
+    const lleno = document.createElement("div"); lleno.style.width = pct + "%"; barra.append(lleno);
+    caja.append(b, p, barra);
+  }
+  $("f-reto").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const dias = +$("rt-dias").value;
+    const { error } = await sb.from("city_challenges").insert({
+      title: $("rt-titulo").value.trim(), metric: $("rt-tipo").value, goal: +$("rt-meta").value,
+      ends_at: new Date(Date.now() + dias * 86400000).toISOString(),
+    });
+    if (error) { msg("m-reto", textoError(error), "error"); return; }
+    msg("m-reto", "Reto creado. Ya aparece en el juego.", "ok");
+    $("f-reto").reset();
+    cargarReto();
+  });
+
   async function cargarAdmin() {
+    cargarReto();
     const [{ data: codigos }, { data: lugares }] = await Promise.all([
       sb.rpc("admin_claim_codes"),
       sb.from("places").select("*").order("name"),
@@ -654,11 +755,17 @@
     $("d-insta").value = actual.instagram || "";
     $("d-tel").value = actual.phone || "";
     $("d-promo").value = actual.promo || "";
+    $("c-nombre").value = actual.house_name || "";
+    $("c-color").value = "#" + (actual.house_color || "8a5a3c");
+    $("c-nombre").placeholder = "Granito de " + (actual.name || "tu cafetería");
+    pintarGranoCasa();
+    msg("m-casa");
     $("u-visible").checked = !!actual.active;
     $("r-canje").classList.add("oculto");
     cargarAroma();
     cargarCupones();
     cargarEstadisticas();
+    cargarInsights();
     prepararMapa();
   }
   function alertar(t) { msg("m-reclamar", t, "error"); }
@@ -818,6 +925,48 @@
       e.textContent = f.getDate();
       ej.append(e);
     }
+  }
+
+  // ---------------------------------------------------------------- Granito de la casa
+  function pintarGranoCasa() { $("c-cuerpo").setAttribute("fill", $("c-color").value); }
+  $("c-color").addEventListener("input", pintarGranoCasa);
+  $("f-casa").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const nombre = $("c-nombre").value.trim();
+    if (nombre && nombre.length < 3) { msg("m-casa", "El nombre necesita al menos 3 letras.", "error"); return; }
+    await guardar({ house_name: nombre || null, house_color: $("c-color").value.replace("#", "").toUpperCase() }, "m-casa",
+      "Guardado. Los jugadores lo verán en tu puerta.");
+  });
+
+  function barras(idG, idE, valores, etiquetas, titulo) {
+    const g = $(idG), ej = $(idE); g.innerHTML = ""; ej.innerHTML = "";
+    const max = Math.max(1, ...valores);
+    valores.forEach((v, i) => {
+      const col = document.createElement("div"); col.className = "col";
+      const b = document.createElement("div"); b.className = "barra-v"; b.style.height = (v / max * 100) + "%";
+      b.title = titulo(i, v);
+      col.append(b); g.append(col);
+      const e = document.createElement("span"); e.textContent = etiquetas[i]; ej.append(e);
+    });
+  }
+  async function cargarInsights() {
+    const id = actual.id;
+    const { data: d, error } = await sb.rpc("place_insights", { p_place: id });
+    if (!actual || actual.id !== id || error || !d || !d.ok) return;
+    $("i-vuelven").textContent = d.returning;
+    $("i-nuevos").textContent = d.newWeek;
+    $("i-cupones").textContent = `${d.couponsClaimed} / ${d.couponsRedeemed}`;
+    $("i-cerca").textContent = d.catchesNear30;
+    $("i-casa").textContent = d.houseCatches;
+    $("i-aromas").textContent = d.lures30;
+    const horas = d.hours || [];
+    barras("g-horas", "e-horas", horas, horas.map((_, h) => h % 3 === 0 ? h + "h" : ""), (h, v) => `${h}:00 – ${h}:59: ${v} check-ins`);
+    const pico = horas.reduce((m, v, h) => v > horas[m] ? h : m, 0);
+    $("i-pico").textContent = horas[pico] > 0
+      ? `Tu hora más fuerte es de ${pico}:00 a ${pico + 1}:00. Activa el aroma en las horas flojas para atraer gente.`
+      : "Todavía no hay suficientes visitas para ver tus horas pico.";
+    const nombres = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+    barras("g-dias", "e-dias", d.weekdays || [], nombres, (i, v) => `${nombres[i]}: ${v} check-ins`);
   }
 
   // ---------------------------------------------------------------- Aroma de cafetería
