@@ -1293,7 +1293,7 @@
   function el(tag, attrs, padre) { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (padre) padre.append(e); return e; }
   function escala(max) {
     const crudo = Math.max(1, max) / 4, pot = Math.pow(10, Math.floor(Math.log10(crudo)));
-    const paso = [1, 2, 5, 10].map((m) => m * pot).find((p) => p >= crudo);
+    const paso = Math.max(1, [1, 2, 5, 10].map((m) => m * pot).find((p) => p >= crudo));   // conteos: sin decimales
     return { paso, tope: paso * 4 };
   }
   function marco(cont, serie, maximo) {
