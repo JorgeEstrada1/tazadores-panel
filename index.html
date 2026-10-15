@@ -172,6 +172,31 @@
   .plan-col.premium { border: 2px solid var(--oro); background: #fff8e8; }
   .plan-col.actual { box-shadow: 0 0 0 3px rgba(47,158,91,.25); }
   .bloqueo { background: #fff8e8; border: 1px dashed var(--oro); border-radius: 12px; padding: 14px; color: var(--tinta); }
+  /* Métricas del administrador */
+  .mt-root { --serie-1: #2a78d6; --serie-2: #eb6834; --rejilla: #ece5d8; --eje: #8a8f98; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 6px 0 18px; }
+  .kpi { border: 1px solid var(--linea); border-radius: 12px; padding: 10px 12px; background: #fff; }
+  .kpi .v { font-family: Fraunces, Georgia, serif; font-size: 28px; font-weight: 700; color: var(--noche); line-height: 1.1; }
+  .kpi .t { font-size: 12px; color: var(--suave); margin-top: 2px; }
+  .kpi.alerta { border-color: #e9b9a9; background: #fff6f2; }
+  .mt-graf { position: relative; margin: 6px 0 18px; }
+  .mt-graf h3 { font-size: 17px; margin: 0 0 2px; }
+  .mt-graf .ley { display: flex; gap: 14px; font-size: 13px; color: var(--suave); margin: 2px 0 6px; flex-wrap: wrap; }
+  .mt-graf .ley i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+  .mt-graf svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .mt-graf svg text { font: 11px Inter, system-ui, sans-serif; fill: var(--suave); }
+  .mt-tip { position: absolute; pointer-events: none; background: var(--noche); color: var(--crema); font-size: 12px; line-height: 1.45; padding: 7px 10px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -110%); opacity: 0; transition: opacity .1s; z-index: 5; }
+  .mt-tip b { color: #fff; }
+  .mt-tip i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  table.mt { width: 100%; border-collapse: collapse; font-size: 14px; margin: 4px 0 14px; }
+  table.mt th, table.mt td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--linea); }
+  table.mt th { font-size: 12px; color: var(--suave); font-weight: 600; }
+  table.mt td.n, table.mt th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .tabla-scroll { overflow-x: auto; }
+  details.mt-datos summary { cursor: pointer; color: var(--suave); font-size: 13px; margin: 4px 0 8px; }
+  .solicitud { border: 1px solid var(--linea); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; background: #fff; }
+  .solicitud .meta { font-size: 13px; color: var(--suave); }
+  .solicitud p { margin: 6px 0; white-space: pre-wrap; }
   .reporte { border: 1px solid var(--linea); border-radius: 12px; padding: 12px; display: grid; grid-template-columns: 90px 1fr; gap: 12px; margin-bottom: 10px; background: var(--papel); }
   .reporte img { width: 90px; height: 160px; object-fit: cover; border-radius: 8px; background: #eee; cursor: zoom-in; }
   .reporte .sinfoto { width: 90px; height: 160px; border-radius: 8px; background: #eee; display: grid; place-items: center; color: var(--suave); font-size: 12px; text-align: center; }
@@ -302,6 +327,38 @@
       <p class="msg" id="m-reclamar" role="status"></p>
     </div>
 
+    <div class="tarjeta oculto mt-root" id="t-metricas">
+      <h2>Cómo va Tazadores <span class="chip">Administrador</span></h2>
+      <p class="sub">Jugadores, capturas y visitas a cafeterías. Se actualiza cada vez que entras.</p>
+      <div class="fila" style="margin-bottom:6px">
+        <select id="mt-dias" aria-label="Período" style="max-width:200px">
+          <option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option><option value="90">Últimos 90 días</option>
+        </select>
+        <button class="btn borde" type="button" id="mt-recargar">Actualizar</button>
+      </div>
+      <div class="kpis" id="mt-kpis"></div>
+      <div class="mt-graf" id="mt-g1">
+        <h3>Jugadores por día</h3>
+        <div class="ley"><span><i style="background:var(--serie-1)"></i>Activos (jugaron ese día)</span><span><i style="background:var(--serie-2)"></i>Nuevos (se registraron)</span></div>
+        <div class="svg"></div><div class="mt-tip"></div>
+      </div>
+      <div class="mt-graf" id="mt-g2">
+        <h3>Granitos atrapados por día</h3>
+        <div class="svg"></div><div class="mt-tip"></div>
+      </div>
+      <details class="mt-datos"><summary>Ver los datos por día en una tabla</summary><div class="tabla-scroll"><table class="mt" id="mt-tabla"></table></div></details>
+      <h3 style="font-size:17px; margin-top:10px">Cafeterías con más visitas</h3>
+      <div class="tabla-scroll"><table class="mt" id="mt-cafes"></table></div>
+      <div id="mt-vencen"></div>
+      <p class="msg" id="m-metricas" role="status"></p>
+    </div>
+
+    <div class="tarjeta oculto" id="t-solicitudes">
+      <h2>Solicitudes de premium <span class="chip" id="sl-cuenta">0</span> <span class="chip">Administrador</span></h2>
+      <p class="sub">Las cafeterías piden premium desde su panel. Cuando te paguen, actívalo aquí (si ya eran premium, los meses se suman al vencimiento).</p>
+      <div id="l-solicitudes"></div>
+    </div>
+
     <div class="tarjeta oculto" id="t-admin">
       <h2>Todas las cafeterías <span class="chip">Administrador</span></h2>
       <p class="sub">Pásale a cada dueño su código para que reclame su cafetería.</p>
@@ -388,7 +445,17 @@
           </ul>
         </div>
       </div>
-      <p class="ayuda" id="p-pedir">Para pasarte a premium, escríbele al equipo de Tazadores.</p>
+      <div id="p-pedir">
+        <p class="ayuda" id="pd-texto">¿Quieres premium? Pídelo aquí y el equipo de Tazadores te escribe para activarlo.</p>
+        <form id="f-pedir" class="fila" style="margin-top:8px">
+          <select id="pd-meses" aria-label="Meses de premium" style="max-width:140px">
+            <option value="1">1 mes</option><option value="3" selected>3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option>
+          </select>
+          <input id="pd-msg" type="text" maxlength="300" placeholder="Mensaje (opcional): cómo prefieres pagar, tu WhatsApp…" style="flex:1; min-width:200px" aria-label="Mensaje para el equipo">
+          <button class="btn oro" type="submit" id="pd-boton">Quiero premium</button>
+        </form>
+        <p class="ayuda" id="pd-estado"></p>
+      </div>
       <form id="f-plan" class="fila oculto" style="margin-top:10px">
         <select id="p-plan" aria-label="Plan" style="max-width:160px"><option value="gratis">Gratis</option><option value="premium">Premium</option></select>
         <input id="p-fecha" type="date" aria-label="Premium hasta" style="max-width:190px">
@@ -650,6 +717,7 @@
     if (/Email not confirmed/i.test(m)) return "Confirma tu correo (revisa tu bandeja) y vuelve a entrar.";
     if (/Password should be/i.test(m)) return "La contraseña debe tener al menos 6 caracteres.";
     if (/Failed to fetch|NetworkError/i.test(m)) return "Sin conexión. Revisa tu internet.";
+    if (/Could not find the function|PGRST202/i.test(m)) return "Falta actualizar el servidor de Tazadores (PASO 5).";
     return m;
   }
 
@@ -744,6 +812,8 @@
     mostrar("t-admin", esAdmin);
     mostrar("t-reto", esAdmin);
     mostrar("t-reportes", esAdmin);
+    mostrar("t-metricas", esAdmin);
+    mostrar("t-solicitudes", esAdmin);
     if (esAdmin) cargarAdmin();
   }
 
@@ -811,6 +881,11 @@
   async function cargarAdmin() {
     cargarReto();
     cargarReportes();
+    cargarMetricas();
+    cargarSolicitudes();
+    await cargarListaAdmin();
+  }
+  async function cargarListaAdmin() {
     const [{ data: codigos }, { data: lugares }] = await Promise.all([
       sb.rpc("admin_claim_codes"),
       sb.from("places").select("*").order("name"),
@@ -1049,7 +1124,8 @@
     $("p-hasta").classList.toggle("oculto", !$("p-hasta").textContent);
     $("p-col-premium").classList.toggle("actual", p);
     $("p-col-gratis").classList.toggle("actual", !p);
-    mostrar("p-pedir", !p && !esAdmin);
+    mostrar("p-pedir", !esAdmin);
+    if (!esAdmin) cargarMiSolicitud(p);
     mostrar("f-plan", esAdmin);
     mostrar("ca-premium", !p);
     $("p-plan").value = actual.plan || "gratis";
@@ -1065,6 +1141,231 @@
     pintarPlan(); cargarInsights();
     msg("m-plan", plan === "premium" ? "Plan premium activado." : "Plan cambiado a gratis.", "ok");
   });
+
+  const fechaCorta = (f) => new Date(String(f).length === 10 ? f + "T12:00:00" : f).toLocaleDateString("es-BO", { day: "numeric", month: "long", year: "numeric" });
+  async function cargarMiSolicitud(premium) {
+    $("pd-boton").textContent = premium ? "Renovar premium" : "Quiero premium";
+    $("pd-texto").textContent = premium
+      ? "¿Quieres renovar? Pídelo aquí: los meses se suman a tu vencimiento."
+      : "¿Quieres premium? Pídelo aquí y el equipo de Tazadores te escribe para activarlo.";
+    $("pd-estado").textContent = "";
+    mostrar("f-pedir", true);
+    const { data, error } = await sb.rpc("my_plan_request", { p_place: actual.id });
+    if (error || !data) return;
+    if (data.status === "pendiente") {
+      mostrar("f-pedir", false);
+      $("pd-estado").textContent = `Pediste ${data.months} ${data.months === 1 ? "mes" : "meses"} de premium el ${fechaCorta(data.created_at)}. Te escribimos para coordinar el pago y lo activamos.`;
+    } else if (data.status === "aprobada" && data.resolved_at && Date.now() - new Date(data.resolved_at) < 14 * 86400000) {
+      $("pd-estado").textContent = `¡Tu premium se activó${data.plan_until ? " hasta el " + fechaCorta(data.plan_until) : ""}!`;
+    }
+  }
+  $("f-pedir").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    $("pd-boton").disabled = true;
+    const { data, error } = await sb.rpc("request_premium", { p_place: actual.id, p_months: +$("pd-meses").value, p_message: $("pd-msg").value.trim() || null });
+    $("pd-boton").disabled = false;
+    if (error) { msg("m-plan", textoError(error), "error"); return; }
+    if (data && data.ok === false) { msg("m-plan", data.message, "error"); return; }
+    $("pd-msg").value = "";
+    msg("m-plan", "¡Listo! Recibimos tu solicitud.", "ok");
+    cargarMiSolicitud(esPremium(actual));
+  });
+
+  // ---------------------------------------------------------------- Solicitudes de premium (admin)
+  async function cargarSolicitudes() {
+    const lista = $("l-solicitudes");
+    const { data, error } = await sb.rpc("admin_plan_requests");
+    if (error) { lista.textContent = textoError(error); return; }
+    const todasS = data || [];
+    const pendientes = todasS.filter((r) => r.status === "pendiente");
+    $("sl-cuenta").textContent = pendientes.length + (pendientes.length === 1 ? " pendiente" : " pendientes");
+    $("sl-cuenta").className = "chip " + (pendientes.length ? "no" : "ok");
+    lista.innerHTML = "";
+    const mostrarS = todasS.filter((r, i) => r.status === "pendiente" || i < 8);
+    if (!mostrarS.length) { const v = document.createElement("div"); v.className = "vacio-estado"; v.textContent = "Todavía no hay solicitudes."; lista.append(v); return; }
+    for (const r of mostrarS) {
+      const caja = document.createElement("div"); caja.className = "solicitud";
+      const t = document.createElement("b"); t.textContent = `${r.place} · ${r.months} ${r.months === 1 ? "mes" : "meses"}`;
+      const meta = document.createElement("div"); meta.className = "meta";
+      const ahora = r.current_plan === "premium" && r.current_until ? `premium hasta el ${fechaCorta(r.current_until)}` : r.current_plan === "premium" ? "premium" : "gratis";
+      meta.textContent = `Pedido el ${fechaCorta(r.created_at)} · ${r.email || "sin correo"} · ahora: ${ahora}`;
+      caja.append(t, meta);
+      if (r.message) { const p = document.createElement("p"); p.textContent = r.message; caja.append(p); }
+      const fila = document.createElement("div"); fila.className = "fila"; fila.style.marginTop = "8px";
+      if (r.status === "pendiente") {
+        const si = document.createElement("button"); si.type = "button"; si.className = "btn"; si.textContent = `Activar ${r.months} ${r.months === 1 ? "mes" : "meses"}`;
+        const no = document.createElement("button"); no.type = "button"; no.className = "btn borde"; no.textContent = "Rechazar";
+        const responder = async (aprobar) => {
+          si.disabled = no.disabled = true;
+          const { data: d, error: e } = await sb.rpc("resolve_plan_request", { p_id: r.id, p_approve: aprobar, p_until: null });
+          if (e) { alert(textoError(e)); si.disabled = no.disabled = false; return; }
+          await cargarSolicitudes();
+          if (aprobar && d && d.plan_until) msgSolicitud(`${r.place}: premium hasta el ${fechaCorta(d.plan_until)}.`);
+          if (aprobar) { cargarListaAdmin(); cargarMetricas(); }
+        };
+        si.onclick = () => responder(true);
+        no.onclick = () => responder(false);
+        fila.append(si, no);
+      } else {
+        const chip = document.createElement("span"); chip.className = "chip " + (r.status === "aprobada" ? "ok" : "no");
+        chip.textContent = r.status === "aprobada" ? `aprobada${r.plan_until ? " · hasta el " + fechaCorta(r.plan_until) : ""}` : "rechazada";
+        fila.append(chip);
+      }
+      caja.append(fila);
+      lista.append(caja);
+    }
+  }
+  function msgSolicitud(t) {
+    const v = document.createElement("p"); v.className = "msg ok"; v.textContent = t;
+    $("l-solicitudes").prepend(v);
+  }
+
+  // ---------------------------------------------------------------- Métricas (admin)
+  let metricas = null;
+  async function cargarMetricas() {
+    msg("m-metricas", "Cargando…");
+    const { data, error } = await sb.rpc("admin_dashboard", { p_dias: +$("mt-dias").value });
+    if (error) { msg("m-metricas", /admin_dashboard/.test(error.message) ? "Falta actualizar el servidor (PASO 5)." : textoError(error), "error"); return; }
+    msg("m-metricas");
+    metricas = data;
+    pintarMetricas();
+  }
+  $("mt-dias").addEventListener("change", cargarMetricas);
+  $("mt-recargar").onclick = cargarMetricas;
+  window.addEventListener("resize", () => { if (metricas && !$("t-metricas").classList.contains("oculto")) pintarGraficos(); });
+
+  const num = (n) => Number(n || 0).toLocaleString("es-BO");
+  const diaCorto = (d) => new Date(d + "T12:00:00").toLocaleDateString("es-BO", { day: "numeric", month: "short" });
+
+  function pintarMetricas() {
+    const k = metricas.kpi, caja = $("mt-kpis");
+    caja.innerHTML = "";
+    const tiles = [
+      [k.activosHoy, "jugaron hoy"], [k.activos7, "jugaron en 7 días"], [k.nuevos7, "nuevos en 7 días"],
+      [k.vuelven7, "volvieron esta semana"], [k.jugadores, "jugadores en total"], [k.capturasHoy, "Granitos atrapados hoy"],
+      [k.checkins7, "check-ins en 7 días"], [k.canjes30, "cupones canjeados (30 días)"], [k.globosHoy, "globos abiertos hoy"],
+      [`${k.premium}/${k.cafes}`, "cafeterías premium"],
+      [k.solicitudes, "solicitudes de premium", k.solicitudes > 0], [k.reportesNuevos, "reportes sin leer", k.reportesNuevos > 0],
+    ];
+    for (const [v, t, alerta] of tiles) {
+      const d = document.createElement("div"); d.className = "kpi" + (alerta ? " alerta" : "");
+      const a = document.createElement("div"); a.className = "v"; a.textContent = typeof v === "number" ? num(v) : v;
+      const b = document.createElement("div"); b.className = "t"; b.textContent = t;
+      d.append(a, b); caja.append(d);
+    }
+    pintarGraficos();
+    // tabla por día
+    const tabla = $("mt-tabla");
+    tabla.innerHTML = "<thead><tr><th>Día</th><th class='n'>Activos</th><th class='n'>Nuevos</th><th class='n'>Capturas</th><th class='n'>Check-ins</th></tr></thead>";
+    const tb = document.createElement("tbody");
+    for (const s of [...(metricas.serie || [])].reverse()) {
+      const tr = document.createElement("tr");
+      for (const [v, cls] of [[diaCorto(s.d), ""], [num(s.activos), "n"], [num(s.nuevos), "n"], [num(s.capturas), "n"], [num(s.checkins), "n"]]) {
+        const td = document.createElement("td"); td.textContent = v; if (cls) td.className = cls; tr.append(td);
+      }
+      tb.append(tr);
+    }
+    tabla.append(tb);
+    // cafeterías
+    const tc = $("mt-cafes");
+    tc.innerHTML = "<thead><tr><th>Cafetería</th><th class='n'>Check-ins</th><th class='n'>Personas</th><th class='n'>Cupones canjeados</th><th>Plan</th></tr></thead>";
+    const tbc = document.createElement("tbody");
+    for (const c of metricas.cafes || []) {
+      const tr = document.createElement("tr");
+      const plan = c.premium ? "Premium" + (c.plan_until ? " · " + diaCorto(c.plan_until) : "") : "Gratis";
+      for (const [v, cls] of [[c.name, ""], [num(c.checkins), "n"], [num(c.visitantes), "n"], [num(c.canjes), "n"], [plan, ""]]) {
+        const td = document.createElement("td"); td.textContent = v; if (cls) td.className = cls; tr.append(td);
+      }
+      tbc.append(tr);
+    }
+    tc.append(tbc);
+    const ven = $("mt-vencen"); ven.innerHTML = "";
+    if ((metricas.vencen || []).length) {
+      const p = document.createElement("p"); p.className = "ayuda";
+      p.textContent = "Premium que vence en los próximos 15 días: " + metricas.vencen.map((v) => `${v.name} (${diaCorto(v.plan_until)})`).join(", ") + ".";
+      ven.append(p);
+    }
+  }
+
+  // Gráficos en SVG (sin bibliotecas). Líneas de 2px, columnas de máx. 24px con punta redondeada,
+  // rejilla fina y un recuadro al pasar el dedo o el mouse.
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, padre) { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (padre) padre.append(e); return e; }
+  function escala(max) {
+    const crudo = Math.max(1, max) / 4, pot = Math.pow(10, Math.floor(Math.log10(crudo)));
+    const paso = [1, 2, 5, 10].map((m) => m * pot).find((p) => p >= crudo);
+    return { paso, tope: paso * 4 };
+  }
+  function marco(cont, serie, maximo) {
+    const W = Math.max(280, cont.clientWidth || 600), H = 200, m = { t: 12, r: 14, b: 26, l: 34 };
+    const { paso, tope } = escala(maximo);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+    const x = (i) => m.l + (serie.length === 1 ? (W - m.l - m.r) / 2 : i * (W - m.l - m.r) / (serie.length - 1));
+    const y = (v) => H - m.b - v / tope * (H - m.t - m.b);
+    for (let v = 0; v <= tope; v += paso) {
+      el("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: "var(--rejilla)", "stroke-width": 1 }, svg);
+      const t = el("text", { x: m.l - 6, y: y(v) + 4, "text-anchor": "end" }, svg); t.textContent = v >= 1000 ? (v / 1000) + "K" : v;
+    }
+    const cada = Math.ceil(serie.length / Math.max(2, Math.floor((W - m.l - m.r) / 70)));
+    serie.forEach((s, i) => {
+      if (i % cada && i !== serie.length - 1) return;
+      const t = el("text", { x: x(i), y: H - 8, "text-anchor": "middle" }, svg); t.textContent = diaCorto(s.d);
+    });
+    return { svg, W, H, m, x, y };
+  }
+  function pintarGraficos() {
+    const serie = metricas.serie || [];
+    if (!serie.length) return;
+    // 1) Jugadores activos y nuevos (líneas)
+    const g1 = $("mt-g1"), c1 = g1.querySelector(".svg"), tip1 = g1.querySelector(".mt-tip");
+    c1.innerHTML = "";
+    const f1 = marco(c1, serie, Math.max(...serie.map((s) => Math.max(s.activos, s.nuevos))));
+    const series = [["activos", "var(--serie-1)", "Activos"], ["nuevos", "var(--serie-2)", "Nuevos"]];
+    for (const [campo, color] of series) {
+      const d = serie.map((s, i) => `${i ? "L" : "M"}${f1.x(i).toFixed(1)},${f1.y(s[campo]).toFixed(1)}`).join("");
+      el("path", { d, fill: "none", stroke: color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, f1.svg);
+      const u = serie.length - 1;
+      el("circle", { cx: f1.x(u), cy: f1.y(serie[u][campo]), r: 4, fill: color, stroke: "var(--papel)", "stroke-width": 2 }, f1.svg);
+    }
+    const guia = el("line", { y1: f1.m.t, y2: f1.H - f1.m.b, stroke: "var(--eje)", "stroke-width": 1, opacity: 0 }, f1.svg);
+    const puntos = series.map(([, color]) => el("circle", { r: 4, fill: color, stroke: "var(--papel)", "stroke-width": 2, opacity: 0 }, f1.svg));
+    const zona = el("rect", { x: f1.m.l, y: 0, width: f1.W - f1.m.l - f1.m.r, height: f1.H, fill: "transparent" }, f1.svg);
+    const mover1 = (ev) => {
+      const r = f1.svg.getBoundingClientRect(), px = (ev.clientX - r.left) * f1.W / r.width;
+      const i = Math.max(0, Math.min(serie.length - 1, Math.round((px - f1.m.l) / ((f1.W - f1.m.l - f1.m.r) / Math.max(1, serie.length - 1)))));
+      const s = serie[i], cx = f1.x(i);
+      guia.setAttribute("x1", cx); guia.setAttribute("x2", cx); guia.setAttribute("opacity", 1);
+      series.forEach(([campo], k) => { puntos[k].setAttribute("cx", cx); puntos[k].setAttribute("cy", f1.y(s[campo])); puntos[k].setAttribute("opacity", 1); });
+      tip1.innerHTML = `<b>${diaCorto(s.d)}</b><br><i style="background:var(--serie-1)"></i>Activos: ${num(s.activos)}<br><i style="background:var(--serie-2)"></i>Nuevos: ${num(s.nuevos)}`;
+      tip1.style.left = (cx * r.width / f1.W) + "px"; tip1.style.top = (c1.offsetTop + f1.y(Math.max(s.activos, s.nuevos)) * r.height / f1.H - 6) + "px"; tip1.style.opacity = 1;
+    };
+    const salir1 = () => { guia.setAttribute("opacity", 0); puntos.forEach((p) => p.setAttribute("opacity", 0)); tip1.style.opacity = 0; };
+    zona.addEventListener("pointermove", mover1); zona.addEventListener("pointerleave", salir1);
+    c1.append(f1.svg);
+
+    // 2) Capturas por día (columnas)
+    const g2 = $("mt-g2"), c2 = g2.querySelector(".svg"), tip2 = g2.querySelector(".mt-tip");
+    c2.innerHTML = "";
+    const f2 = marco(c2, serie, Math.max(...serie.map((s) => s.capturas)));
+    const banda = (f2.W - f2.m.l - f2.m.r) / serie.length, ancho = Math.max(2, Math.min(24, banda - 2));
+    const x2 = (i) => f2.m.l + banda * (i + 0.5);
+    // reubicar las etiquetas del eje x al centro de cada columna
+    f2.svg.querySelectorAll("text[text-anchor=middle]").forEach((t) => t.remove());
+    const cada2 = Math.ceil(serie.length / Math.max(2, Math.floor((f2.W - f2.m.l - f2.m.r) / 70)));
+    serie.forEach((s, i) => {
+      if (!(i % cada2) || i === serie.length - 1) { const t = el("text", { x: x2(i), y: f2.H - 8, "text-anchor": "middle" }, f2.svg); t.textContent = diaCorto(s.d); }
+      const base = f2.y(0), alto = Math.max(0, base - f2.y(s.capturas)), rr = Math.min(4, alto, ancho / 2), x0 = x2(i) - ancho / 2;
+      if (alto > 0) el("path", { d: `M${x0},${base}V${base - alto + rr}Q${x0},${base - alto} ${x0 + rr},${base - alto}H${x0 + ancho - rr}Q${x0 + ancho},${base - alto} ${x0 + ancho},${base - alto + rr}V${base}Z`, fill: "var(--serie-1)" }, f2.svg);
+      const hit = el("rect", { x: f2.m.l + banda * i, y: f2.m.t, width: banda, height: f2.H - f2.m.t - f2.m.b, fill: "transparent" }, f2.svg);
+      hit.addEventListener("pointerenter", () => {
+        const r = f2.svg.getBoundingClientRect();
+        tip2.innerHTML = `<b>${diaCorto(s.d)}</b><br>${num(s.capturas)} Granitos atrapados<br>${num(s.checkins)} check-ins`;
+        tip2.style.left = (x2(i) * r.width / f2.W) + "px"; tip2.style.top = (c2.offsetTop + f2.y(s.capturas) * r.height / f2.H - 6) + "px"; tip2.style.opacity = 1;
+      });
+      hit.addEventListener("pointerleave", () => { tip2.style.opacity = 0; });
+    });
+    c2.append(f2.svg);
+  }
 
   // ---------------------------------------------------------------- Afiche
   function svgGrano(color, corona) {
