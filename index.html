@@ -69,7 +69,7 @@
   .sub { color: var(--suave); margin: 0 0 16px; }
   label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 6px; color: var(--tinta); }
   .ayuda { font-size: 13px; color: var(--suave); margin: 6px 0 0; }
-  input[type=text], input[type=email], input[type=password], input[type=tel], input[type=number], input[type=date], select, textarea {
+  input[type=text], input[type=email], input[type=password], input[type=tel], input[type=number], input[type=date], input[type=datetime-local], select, textarea {
     width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid #d6ccba; background: #fff; font-size: 16px;
   }
   textarea { min-height: 84px; resize: vertical; }
@@ -261,6 +261,88 @@
   @media (max-width: 760px) { .grid3 { grid-template-columns: 1fr 1fr; } }
   .pin { width: 34px; height: 34px; border-radius: 50% 50% 50% 0; background: var(--oro); border: 3px solid var(--noche); transform: rotate(-45deg); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
   .pin::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--noche); }
+
+  /* Navegación del administrador: Mis cafeterías / Desarrollador */
+  .vistas { display: flex; gap: 6px; background: #efe7d8; border-radius: 12px; padding: 4px; margin: 0 0 18px; max-width: 460px; }
+  .vistas button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: transparent;
+    padding: 10px 12px; border-radius: 9px; cursor: pointer; font-weight: 600; color: var(--suave); min-height: 44px; }
+  .vistas button[aria-pressed=true] { background: #fff; color: var(--noche); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .vistas button:focus-visible { outline: 2px solid var(--oro); outline-offset: 1px; }
+
+  /* Sección Desarrollador */
+  .dev-cabecera { background: var(--noche); color: var(--crema); border-color: var(--noche);
+    display: flex; gap: 16px 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .dev-cabecera h1 { color: #fff; margin-top: 8px; }
+  .dev-cabecera .sub { color: #b9c4d3; margin: 0; max-width: 560px; }
+  .chip.dev { background: var(--oro); color: var(--oro-osc); }
+  .dev-cuenta { background: var(--panel2); border-radius: 12px; padding: 10px 14px; min-width: 0; }
+  .dev-cuenta small { display: block; color: #b9c4d3; font-size: 12px; }
+  .dev-cuenta b { font-weight: 600; overflow-wrap: anywhere; }
+
+  /* Eventos */
+  .enc-tarjeta { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+  .enc-tarjeta .sub { max-width: 600px; }
+  .filtros { display: flex; gap: 6px; flex-wrap: wrap; margin: 2px 0 14px; }
+  .filtros button { border: 1px solid #d6ccba; background: #fff; border-radius: 99px; padding: 6px 14px; font-size: 14px; font-weight: 600;
+    cursor: pointer; color: var(--suave); min-height: 36px; }
+  .filtros button[aria-pressed=true] { background: var(--noche); color: var(--crema); border-color: var(--noche); }
+  .filtros button:focus-visible, .atajos button:focus-visible, .color:focus-visible { outline: 2px solid var(--oro); outline-offset: 2px; }
+  .evento { display: grid; grid-template-columns: 8px 1fr auto; gap: 0 14px; border: 1px solid var(--linea); border-radius: 12px;
+    background: #fff; overflow: hidden; margin-bottom: 10px; }
+  .evento .franja { background: var(--c, var(--oro)); }
+  .evento .cuerpo { padding: 12px 0; min-width: 0; }
+  .evento .nom { font-family: Fraunces, Georgia, serif; font-size: 18px; font-weight: 700; color: var(--noche); line-height: 1.25; }
+  .evento .cuando { font-size: 13px; color: var(--suave); margin-top: 2px; }
+  .evento .desc { font-size: 14px; margin: 6px 0 0; }
+  .evento .acciones { display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 12px 0; justify-content: center; }
+  .btn.chico { min-height: 36px; padding: 6px 12px; font-size: 14px; border-radius: 10px; }
+  .btn.peligro { background: transparent; color: var(--error); border: 1px solid #e3b5a8; }
+  .btn.peligro.confirmar { background: var(--error); color: #fff; border-color: var(--error); }
+  .etiquetas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .etq { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: #f3ede1; color: var(--tinta);
+    display: inline-flex; gap: 6px; align-items: center; }
+  .etq i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .etq.xp { background: #fff1cc; color: #6d4a0c; }
+  .etq.estado-curso { background: #dff3e6; color: #1f6b3e; }
+  .etq.estado-prox { background: #e3ecf7; color: #1f4e79; }
+  .etq.estado-fin { background: #eee6d6; color: var(--suave); }
+  .aviso { background: #fff8e8; border: 1px solid #f0d89c; border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-bottom: 12px; }
+
+  /* Formulario de evento */
+  .ev-form { border-top: 1px solid var(--linea); margin-top: 14px; padding-top: 4px; }
+  .ev-form h3 { margin-top: 14px; }
+  .contador { float: right; font-weight: 500; color: var(--suave); font-size: 12px; }
+  .opciones { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opcion { position: relative; display: inline-block; margin: 0; font-size: inherit; font-weight: inherit; }
+  .opcion input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .opcion span { display: inline-flex; align-items: center; gap: 7px; border: 1px solid #d6ccba; background: #fff; border-radius: 99px;
+    padding: 7px 13px; font-size: 14px; font-weight: 600; cursor: pointer; user-select: none; min-height: 36px; }
+  .opcion span i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .opcion input:checked + span { background: var(--noche); color: var(--crema); border-color: var(--noche); }
+  .opcion input:focus-visible + span { outline: 2px solid var(--oro); outline-offset: 2px; }
+  .grupo-rareza { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+  .grupo-rareza > b { font-size: 12px; color: var(--suave); width: 52px; flex: none; padding-top: 9px; }
+  .colores { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .color { width: 36px; height: 36px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px #d6ccba; cursor: pointer; padding: 0; }
+  .color[aria-pressed=true] { box-shadow: 0 0 0 3px var(--noche); }
+  .colores input[type=color] { width: 44px; height: 36px; border: 1px solid #d6ccba; border-radius: 10px; padding: 2px; background: #fff; cursor: pointer; }
+  .atajos { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .atajos button { border: 0; background: #efe7d8; border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--tinta); }
+  .atajos button:hover { background: #e5dac6; }
+  .vista-previa { background: linear-gradient(160deg, #cfe7d6, #e7efd9); border: 1px solid #c9dccb; border-radius: 12px; padding: 18px 14px;
+    display: grid; gap: 8px; justify-items: center; margin-top: 16px; }
+  .vista-previa .rotulo { font-size: 12px; font-weight: 600; color: #3d5245; letter-spacing: .3px; }
+  .pastilla { color: #fff; font-weight: 700; border-radius: 99px; padding: 9px 18px 9px 10px; display: inline-flex; align-items: center; gap: 9px;
+    box-shadow: 0 3px 0 rgba(0,0,0,.18); max-width: 100%; }
+  .pastilla .ico { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,.25); display: grid; place-items: center; flex: none; }
+  .pastilla .tx { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vista-previa .toque { color: #3d5245; font-size: 13px; text-align: center; max-width: 520px; }
+  @media (max-width: 560px) {
+    .evento { grid-template-columns: 8px 1fr; }
+    .evento .acciones { grid-column: 2; flex-direction: row; flex-wrap: wrap; padding: 0 12px 12px 0; }
+    .grupo-rareza { flex-direction: column; gap: 4px; }
+    .grupo-rareza > b { padding-top: 0; }
+  }
 </style>
 </head>
 <body>
@@ -279,6 +361,15 @@
 </header>
 
 <main>
+  <!-- Solo para cuentas de desarrollador (administradores) -->
+  <nav class="vistas oculto" id="vistas" aria-label="Secciones del panel">
+    <button type="button" id="ir-inicio" aria-pressed="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/></svg>
+      Mis cafeterías</button>
+    <button type="button" id="ir-dev" aria-pressed="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/><path d="m13.5 4-3 16"/></svg>
+      Desarrollador</button>
+  </nav>
   <!-- Acceso -->
   <section id="v-acceso" class="acceso oculto">
     <div class="tarjeta">
@@ -334,6 +425,94 @@
         <button class="btn" type="submit">Reclamar</button>
       </form>
       <p class="msg" id="m-reclamar" role="status"></p>
+    </div>
+
+  </section>
+
+  <!-- Desarrollador: solo cuentas registradas en la tabla admins -->
+  <section id="v-dev" class="oculto">
+    <div class="tarjeta dev-cabecera">
+      <div>
+        <span class="chip dev">Modo desarrollador</span>
+        <h1>Centro de control</h1>
+        <p class="sub">Solo lo ven las cuentas de desarrollador. Lo que cambies aquí les llega a todos los jugadores.</p>
+      </div>
+      <div class="dev-cuenta"><small>Cuenta registrada</small><b id="dev-correo">—</b></div>
+    </div>
+
+    <div class="tarjeta" id="t-eventos">
+      <div class="enc-tarjeta">
+        <div>
+          <h2>Eventos</h2>
+          <p class="sub">Más Granitos de algunas especies, gorros y XP extra por unos días. Los jugadores lo ven la próxima vez que abren el juego.</p>
+        </div>
+        <button class="btn oro" type="button" id="ev-nuevo">+ Nuevo evento</button>
+      </div>
+      <div class="filtros" id="ev-filtros" aria-label="Filtrar eventos">
+        <button type="button" data-f="curso" aria-pressed="true">En curso <span></span></button>
+        <button type="button" data-f="prox" aria-pressed="false">Próximos <span></span></button>
+        <button type="button" data-f="fin" aria-pressed="false">Terminados <span></span></button>
+      </div>
+      <div id="ev-aviso"></div>
+      <div id="l-eventos"><p class="vacio-estado">Cargando…</p></div>
+      <p class="msg" id="m-eventos" role="status"></p>
+
+      <form id="f-evento" class="ev-form oculto" novalidate>
+        <h3 id="ev-titulo-form">Nuevo evento</h3>
+        <label>Empezar desde una idea</label>
+        <div class="atajos plantillas" id="ev-plantillas"></div>
+        <div class="grid2">
+          <div>
+            <label for="ev-nombre">Nombre <span class="contador" id="ev-cont-nombre">0/40</span></label>
+            <input id="ev-nombre" type="text" maxlength="40" required placeholder="Fin de semana de Doble XP">
+          </div>
+          <div>
+            <label for="ev-desc">Qué pasa (se ve al tocar el evento) <span class="contador" id="ev-cont-desc">0/200</span></label>
+            <input id="ev-desc" type="text" maxlength="200" placeholder="¡Todo da el doble de XP hasta el domingo!">
+          </div>
+          <div>
+            <label for="ev-inicio">Empieza</label>
+            <input id="ev-inicio" type="datetime-local" required>
+            <div class="atajos"><button type="button" data-ini="0">Ahora</button><button type="button" data-ini="manana">Mañana 8:00</button><button type="button" data-ini="sabado">Sábado 8:00</button></div>
+          </div>
+          <div>
+            <label for="ev-fin">Termina</label>
+            <input id="ev-fin" type="datetime-local" required>
+            <div class="atajos"><button type="button" data-dur="1">1 día</button><button type="button" data-dur="3">3 días</button><button type="button" data-dur="7">1 semana</button><button type="button" data-dur="14">2 semanas</button></div>
+          </div>
+        </div>
+
+        <label>Granitos que salen más</label>
+        <div id="ev-especies"></div>
+
+        <div class="grid2">
+          <div>
+            <label>XP extra</label>
+            <div class="opciones" id="ev-xp"></div>
+            <p class="ayuda">Se aplica en el servidor a toda la XP mientras dura el evento (capturas, check-ins, paradas y premios).</p>
+          </div>
+          <div>
+            <label>Gorro de los Granitos</label>
+            <div class="opciones" id="ev-gorro"></div>
+          </div>
+        </div>
+
+        <label>Color de la pastilla</label>
+        <div class="colores" id="ev-colores"></div>
+
+        <div class="vista-previa" aria-live="polite">
+          <span class="rotulo">ASÍ SE VE EN EL MAPA</span>
+          <span class="pastilla" id="ev-pastilla"><span class="ico" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="m12 2 2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6Z"/></svg></span><span class="tx" id="ev-pastilla-tx">Nombre del evento</span></span>
+          <span class="toque" id="ev-toque"></span>
+        </div>
+
+        <div class="fila" style="margin-top:16px">
+          <button class="btn" type="submit" id="ev-guardar">Guardar evento</button>
+          <button class="btn borde" type="button" id="ev-cancelar">Cancelar</button>
+        </div>
+        <p class="msg" id="m-evento" role="status"></p>
+      </form>
     </div>
 
     <div class="tarjeta oculto mt-root" id="t-metricas">
@@ -820,9 +999,14 @@
     if (antes !== s.user.id) iniciar();
   });
 
+  let vistaLista = "inicio";   // a dónde vuelve el botón "Volver" del editor
   function pantalla(nombre) {
-    for (const v of ["acceso", "inicio", "editor"]) mostrar("v-" + v, v === nombre);
+    for (const v of ["acceso", "inicio", "dev", "editor"]) mostrar("v-" + v, v === nombre);
     const dentro = nombre !== "acceso";
+    if (nombre === "inicio" || nombre === "dev") vistaLista = nombre;
+    mostrar("vistas", esAdmin && (nombre === "inicio" || nombre === "dev"));
+    $("ir-inicio").setAttribute("aria-pressed", String(nombre === "inicio"));
+    $("ir-dev").setAttribute("aria-pressed", String(nombre === "dev"));
     mostrar("salir", dentro);
     $("usuario").textContent = dentro && sesion ? sesion.user.email : "";
     window.scrollTo(0, 0);
@@ -833,14 +1017,28 @@
     pantalla("inicio");
     const { data } = await sb.rpc("is_admin");
     esAdmin = data === true;
+    mostrar("vistas", esAdmin);
+    if (esAdmin) {
+      $("dev-correo").textContent = sesion.user.email || "—";
+      let guardada = null;
+      try { guardada = localStorage.getItem("taz_vista"); } catch (_) {}
+      if (guardada === "dev") pantalla("dev");
+    }
     await cargarMias();
     mostrar("t-admin", esAdmin);
     mostrar("t-reto", esAdmin);
     mostrar("t-reportes", esAdmin);
     mostrar("t-metricas", esAdmin);
     mostrar("t-solicitudes", esAdmin);
-    if (esAdmin) cargarAdmin();
+    if (esAdmin) { cargarAdmin(); cargarEventos(); }
   }
+
+  function irA(vista) {
+    pantalla(vista);
+    try { localStorage.setItem("taz_vista", vista); } catch (_) {}
+  }
+  $("ir-inicio").onclick = () => irA("inicio");
+  $("ir-dev").onclick = () => irA("dev");
 
   function itemLugar(lugar, extra) {
     const b = document.createElement("button");
@@ -946,7 +1144,7 @@
   });
 
   // ---------------------------------------------------------------- Editor
-  $("volver").onclick = () => { pantalla("inicio"); cargarMias(); if (esAdmin) cargarAdmin(); };
+  $("volver").onclick = () => { pantalla(esAdmin ? vistaLista : "inicio"); cargarMias(); if (esAdmin) cargarAdmin(); };
 
   async function abrir(id) {
     const { data, error } = await sb.from("places").select("*").eq("id", id).single();
@@ -1668,6 +1866,293 @@
       tQr = setTimeout(cargarQr, 5000);
     }
   }
+
+
+  // ---------------------------------------------------------------- Eventos (Desarrollador)
+  const ESPECIES = [
+    ["arabica", "Arábica", "comun"], ["robusta", "Robusta", "comun"], ["espresso", "Espressito", "comun"], ["cortado", "Cortadito", "comun"],
+    ["capuchino", "Capuchino", "comun"], ["latte", "Lattecito", "comun"], ["americano", "Americano", "comun"],
+    ["moka", "Moka", "rara"], ["macchiato", "Macchiato", "rara"], ["frappe", "Frappé", "rara"], ["cascarita", "Cascarita", "rara"],
+    ["geisha", "Geisha", "epica"], ["bourbon", "Bourbon", "epica"],
+  ];
+  const NOMBRE_ESPECIE = Object.fromEntries(ESPECIES.map(([id, n]) => [id, n]));
+  const GORROS = [["", "Sin gorro"], ["fiesta", "De fiesta"], ["navidad", "Navideño"], ["chapaco", "Sombrero chapaco"], ["calavera", "Calavera"]];
+  const XPS = [[1, "Normal"], [1.5, "×1,5"], [2, "×2"], [3, "×3"]];
+  const COLORES_EV = ["6B4FA0", "1F4E79", "2F6E5E", "B5523B", "D32F2F", "8A3B5C", "C27C2C", "6F4E37"];
+  let eventos = [], filtroEv = "curso", editandoEv = null, colorEv = COLORES_EV[0];
+
+  function finDeSemana() {   // próximo domingo 23:59
+    const d = new Date(); d.setDate(d.getDate() + ((7 - d.getDay()) % 7)); d.setHours(23, 59, 0, 0);
+    return d < new Date() ? new Date(d.getTime() + 7 * 864e5) : d;
+  }
+  const PLANTILLAS = [
+    { t: "Doble XP de fin de semana", nombre: "Fin de semana de Doble XP", desc: "¡Todo da el doble de XP hasta el domingo por la noche!", xp: 2, color: "C27C2C", fin: finDeSemana },
+    { t: "Noche de Espressitos", nombre: "Noche de Espressitos", desc: "Salen muchos más Espressitos y Mokas. ¡Sal a cazar de noche!", especies: ["espresso", "moka"], color: "1F4E79", dias: 3 },
+    { t: "Lluvia de raros", nombre: "Lluvia de Granitos raros", desc: "Macchiatos, Frappés y Cascaritas por todo Tarija, y ×1,5 XP.", especies: ["macchiato", "frappe", "cascarita"], xp: 1.5, color: "6B4FA0", dias: 2 },
+    { t: "Fiesta chapaca", nombre: "Fiesta chapaca", desc: "Los Granitos se ponen sombrero chapaco y aparece más el Bourbon.", especies: ["bourbon", "macchiato"], gorro: "chapaco", color: "B5523B", dias: 7 },
+  ];
+
+  const aLocal = (iso) => {   // ISO → valor de <input type=datetime-local> en la hora del navegador
+    const d = new Date(iso); const z = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`;
+  };
+  const fechaHoraEv = (iso) => new Date(iso).toLocaleString("es-BO", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  function estadoEv(ev, ahora = Date.now()) {
+    const a = Date.parse(ev.starts_at), b = Date.parse(ev.ends_at);
+    return ahora < a ? "prox" : ahora >= b ? "fin" : "curso";
+  }
+  function duracion(ms) {
+    const h = Math.round(ms / 36e5);
+    if (h < 1) return "menos de una hora";
+    if (h < 48) return h === 1 ? "1 hora" : h + " horas";
+    return Math.round(h / 24) + " días";
+  }
+
+  async function cargarEventos() {
+    const { data, error } = await sb.from("game_events").select("*").order("starts_at", { ascending: false });
+    if (error) { $("l-eventos").innerHTML = ""; msg("m-eventos", textoError(error), "error"); return; }
+    eventos = data || [];
+    pintarEventos();
+  }
+
+  function pintarEventos() {
+    const ahora = Date.now();
+    const grupos = { curso: [], prox: [], fin: [] };
+    for (const ev of eventos) grupos[estadoEv(ev, ahora)].push(ev);
+    grupos.prox.sort((x, y) => Date.parse(x.starts_at) - Date.parse(y.starts_at));
+    for (const b of $("ev-filtros").querySelectorAll("button")) {
+      b.setAttribute("aria-pressed", String(b.dataset.f === filtroEv));
+      b.querySelector("span").textContent = `(${grupos[b.dataset.f].length})`;
+    }
+    const aviso = $("ev-aviso"); aviso.innerHTML = "";
+    if (filtroEv === "curso" && grupos.curso.length > 1) {
+      const d = document.createElement("div"); d.className = "aviso";
+      d.textContent = `Hay ${grupos.curso.length} eventos al mismo tiempo. El mapa muestra el nombre de uno solo, pero salen los Granitos de todos y la XP usa el multiplicador más alto.`;
+      aviso.append(d);
+    }
+    const lista = $("l-eventos"); lista.innerHTML = "";
+    const items = grupos[filtroEv];
+    if (!items.length) {
+      const p = document.createElement("p"); p.className = "vacio-estado";
+      p.textContent = { curso: "No hay ningún evento en curso.", prox: "No hay eventos programados.", fin: "Todavía no terminó ningún evento." }[filtroEv];
+      lista.append(p); return;
+    }
+    for (const ev of items) lista.append(itemEvento(ev, filtroEv, ahora));
+  }
+
+  function etiqueta(texto, clase, color) {
+    const s = document.createElement("span"); s.className = "etq" + (clase ? " " + clase : "");
+    if (color) { const i = document.createElement("i"); i.style.background = color; s.append(i); }
+    s.append(texto); return s;
+  }
+
+  function itemEvento(ev, estado, ahora) {
+    const caja = document.createElement("div"); caja.className = "evento";
+    caja.style.setProperty("--c", "#" + (ev.color || "F2B43C"));
+    const franja = document.createElement("div"); franja.className = "franja";
+    const cuerpo = document.createElement("div"); cuerpo.className = "cuerpo";
+    const nom = document.createElement("div"); nom.className = "nom"; nom.textContent = ev.name;
+    const cuando = document.createElement("div"); cuando.className = "cuando";
+    const resto = estado === "curso" ? ` · quedan ${duracion(Date.parse(ev.ends_at) - ahora)}`
+      : estado === "prox" ? ` · empieza en ${duracion(Date.parse(ev.starts_at) - ahora)}` : "";
+    cuando.textContent = `${fechaHoraEv(ev.starts_at)} → ${fechaHoraEv(ev.ends_at)}${resto}`;
+    cuerpo.append(nom, cuando);
+    if (ev.description) { const d = document.createElement("p"); d.className = "desc"; d.textContent = ev.description; cuerpo.append(d); }
+    const et = document.createElement("div"); et.className = "etiquetas";
+    et.append(etiqueta({ curso: "En curso", prox: "Próximo", fin: "Terminado" }[estado], "estado-" + estado));
+    if (+ev.xp_mult > 1) et.append(etiqueta(`×${String(+ev.xp_mult).replace(".", ",")} XP`, "xp"));
+    if (ev.hat) et.append(etiqueta("Gorro: " + (GORROS.find((g) => g[0] === ev.hat) || [, ev.hat])[1]));
+    for (const s of ev.species || []) {
+      const e = ESPECIES.find((x) => x[0] === s);
+      et.append(etiqueta(NOMBRE_ESPECIE[s] || s, "", e ? RAREZA[e[2]][1] : null));
+    }
+    cuerpo.append(et);
+
+    const acc = document.createElement("div"); acc.className = "acciones";
+    const editar = document.createElement("button"); editar.type = "button"; editar.className = "btn borde chico"; editar.textContent = "Editar";
+    editar.onclick = () => abrirFormEvento(ev);
+    acc.append(editar);
+    if (estado === "curso") {
+      const term = document.createElement("button"); term.type = "button"; term.className = "btn borde chico"; term.textContent = "Terminar ahora";
+      term.onclick = () => terminarEvento(ev, term);
+      acc.append(term);
+    }
+    const borrar = document.createElement("button"); borrar.type = "button"; borrar.className = "btn peligro chico"; borrar.textContent = "Borrar";
+    borrar.onclick = () => borrarEvento(ev, borrar);
+    acc.append(borrar);
+    caja.append(franja, cuerpo, acc);
+    return caja;
+  }
+
+  $("ev-filtros").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    filtroEv = b.dataset.f; pintarEventos();
+  });
+
+  // Confirmación en dos toques (sin ventanas emergentes)
+  function dosToques(boton, textoConfirmar, accion) {
+    if (boton.dataset.confirmar === "1") { accion(); return; }
+    const original = boton.textContent;
+    boton.dataset.confirmar = "1"; boton.textContent = textoConfirmar; boton.classList.add("confirmar");
+    setTimeout(() => { if (boton.isConnected) { boton.dataset.confirmar = ""; boton.textContent = original; boton.classList.remove("confirmar"); } }, 4000);
+  }
+
+  async function terminarEvento(ev, boton) {
+    dosToques(boton, "¿Terminar? Toca otra vez", async () => {
+      boton.disabled = true;
+      const { error } = await sb.from("game_events").update({ ends_at: new Date().toISOString() }).eq("id", ev.id);
+      if (error) { msg("m-eventos", textoError(error), "error"); boton.disabled = false; return; }
+      msg("m-eventos", `"${ev.name}" terminó.`, "ok");
+      cargarEventos();
+    });
+  }
+
+  async function borrarEvento(ev, boton) {
+    dosToques(boton, "¿Borrar? Toca otra vez", async () => {
+      boton.disabled = true;
+      const { error } = await sb.from("game_events").delete().eq("id", ev.id);
+      if (error) { msg("m-eventos", textoError(error), "error"); boton.disabled = false; return; }
+      msg("m-eventos", `"${ev.name}" se borró.`, "ok");
+      if (editandoEv && editandoEv.id === ev.id) cerrarFormEvento();
+      cargarEventos();
+    });
+  }
+
+  // ---- Formulario
+  function armarFormEvento() {
+    const pl = $("ev-plantillas");
+    for (const p of PLANTILLAS) {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = p.t;
+      b.onclick = () => usarPlantilla(p); pl.append(b);
+    }
+    const esp = $("ev-especies");
+    for (const [rz, titulo] of [["comun", "Comunes"], ["rara", "Raras"], ["epica", "Épicas"]]) {
+      const g = document.createElement("div"); g.className = "grupo-rareza";
+      const b = document.createElement("b"); b.textContent = titulo;
+      const o = document.createElement("div"); o.className = "opciones";
+      for (const [id, nombre, r] of ESPECIES.filter((e) => e[2] === rz)) o.append(opcion("checkbox", "ev-sp", id, nombre, RAREZA[r][1]));
+      g.append(b, o); esp.append(g);
+    }
+    for (const [v, n] of XPS) $("ev-xp").append(opcion("radio", "ev-xp", String(v), n));
+    for (const [v, n] of GORROS) $("ev-gorro").append(opcion("radio", "ev-gorro", v, n));
+    const col = $("ev-colores");
+    for (const c of COLORES_EV) {
+      const b = document.createElement("button"); b.type = "button"; b.className = "color"; b.style.background = "#" + c;
+      b.dataset.c = c; b.setAttribute("aria-label", "Color #" + c); b.onclick = () => elegirColor(c);
+      col.append(b);
+    }
+    const libre = document.createElement("input"); libre.type = "color"; libre.id = "ev-color-libre"; libre.setAttribute("aria-label", "Otro color");
+    libre.oninput = () => elegirColor(libre.value.slice(1).toUpperCase());
+    col.append(libre);
+    for (const id of ["ev-nombre", "ev-desc"]) $(id).addEventListener("input", previa);
+    $("f-evento").addEventListener("change", previa);
+    $("f-evento").addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-ini], button[data-dur]"); if (!b) return;
+      if (b.dataset.ini !== undefined) {
+        const d = new Date();
+        if (b.dataset.ini === "manana") { d.setDate(d.getDate() + 1); d.setHours(8, 0, 0, 0); }
+        if (b.dataset.ini === "sabado") { d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7 || 7)); d.setHours(8, 0, 0, 0); }
+        $("ev-inicio").value = aLocal(d.toISOString());
+      } else {
+        const ini = $("ev-inicio").value ? new Date($("ev-inicio").value) : new Date();
+        $("ev-fin").value = aLocal(new Date(ini.getTime() + +b.dataset.dur * 864e5).toISOString());
+      }
+      previa();
+    });
+  }
+  function opcion(tipo, nombre, valor, texto, punto) {
+    const l = document.createElement("label"); l.className = "opcion";
+    const i = document.createElement("input"); i.type = tipo; i.name = nombre; i.value = valor;
+    const s = document.createElement("span");
+    if (punto) { const p = document.createElement("i"); p.style.background = punto; s.append(p); }
+    s.append(texto); l.append(i, s); return l;
+  }
+  function marcar(nombre, valores) {
+    for (const i of document.querySelectorAll(`input[name="${nombre}"]`)) i.checked = valores.includes(i.value);
+  }
+  function elegirColor(c) {
+    colorEv = c;
+    for (const b of $("ev-colores").querySelectorAll(".color")) b.setAttribute("aria-pressed", String(b.dataset.c === c));
+    $("ev-color-libre").value = "#" + c.toLowerCase();
+    previa();
+  }
+  function previa() {
+    const n = $("ev-nombre").value.trim(), d = $("ev-desc").value.trim();
+    $("ev-cont-nombre").textContent = `${$("ev-nombre").value.length}/40`;
+    $("ev-cont-desc").textContent = `${$("ev-desc").value.length}/200`;
+    $("ev-pastilla").style.background = "#" + colorEv;
+    $("ev-pastilla-tx").textContent = n || "Nombre del evento";
+    $("ev-toque").textContent = `Al tocarla: «${n || "Nombre"}: ${d || "lo que pasa"}»`;
+  }
+  function usarPlantilla(p) {
+    $("ev-nombre").value = p.nombre; $("ev-desc").value = p.desc;
+    marcar("ev-sp", p.especies || []); marcar("ev-xp", [String(p.xp || 1)]); marcar("ev-gorro", [p.gorro || ""]);
+    const ini = new Date(); ini.setSeconds(0, 0);
+    $("ev-inicio").value = aLocal(ini.toISOString());
+    const fin = p.fin ? p.fin() : new Date(ini.getTime() + p.dias * 864e5);
+    $("ev-fin").value = aLocal(fin.toISOString());
+    elegirColor(p.color);
+  }
+  function abrirFormEvento(ev) {
+    editandoEv = ev || null;
+    $("ev-titulo-form").textContent = ev ? "Editar evento" : "Nuevo evento";
+    $("ev-guardar").textContent = ev ? "Guardar cambios" : "Crear evento";
+    if (ev) {
+      $("ev-nombre").value = ev.name || ""; $("ev-desc").value = ev.description || "";
+      $("ev-inicio").value = aLocal(ev.starts_at); $("ev-fin").value = aLocal(ev.ends_at);
+      marcar("ev-sp", ev.species || []); marcar("ev-xp", [String(+ev.xp_mult || 1)]); marcar("ev-gorro", [ev.hat || ""]);
+      elegirColor((ev.color || COLORES_EV[0]).toUpperCase());
+    } else {
+      $("f-evento").reset();
+      marcar("ev-xp", ["1"]); marcar("ev-gorro", [""]);
+      const ini = new Date(); ini.setSeconds(0, 0);
+      $("ev-inicio").value = aLocal(ini.toISOString());
+      $("ev-fin").value = aLocal(new Date(ini.getTime() + 3 * 864e5).toISOString());
+      elegirColor(COLORES_EV[0]);
+    }
+    msg("m-evento");
+    mostrar("f-evento", true);
+    $("f-evento").scrollIntoView({ behavior: "smooth", block: "start" });
+    $("ev-nombre").focus({ preventScroll: true });
+  }
+  function cerrarFormEvento() { editandoEv = null; mostrar("f-evento", false); msg("m-evento"); }
+  $("ev-nuevo").onclick = () => abrirFormEvento(null);
+  $("ev-cancelar").onclick = cerrarFormEvento;
+
+  $("f-evento").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nombre = $("ev-nombre").value.trim(), desc = $("ev-desc").value.trim();
+    const ini = new Date($("ev-inicio").value), fin = new Date($("ev-fin").value);
+    if (nombre.length < 2) { msg("m-evento", "Ponle un nombre al evento (mínimo 2 letras).", "error"); $("ev-nombre").focus(); return; }
+    if (isNaN(ini) || isNaN(fin)) { msg("m-evento", "Elige cuándo empieza y cuándo termina.", "error"); return; }
+    if (fin <= ini) { msg("m-evento", "El evento tiene que terminar después de empezar.", "error"); $("ev-fin").focus(); return; }
+    if (!editandoEv && fin <= new Date()) { msg("m-evento", "Esa fecha de fin ya pasó. Elige una fecha futura.", "error"); $("ev-fin").focus(); return; }
+    const fila = {
+      name: nombre, description: desc || null,
+      starts_at: ini.toISOString(), ends_at: fin.toISOString(),
+      species: [...document.querySelectorAll('input[name="ev-sp"]:checked')].map((i) => i.value),
+      xp_mult: +((document.querySelector('input[name="ev-xp"]:checked') || {}).value || 1),
+      hat: (document.querySelector('input[name="ev-gorro"]:checked') || {}).value || null,
+      color: colorEv,
+    };
+    const eraEdicion = !!editandoEv;
+    $("ev-guardar").disabled = true;
+    msg("m-evento", "Guardando…");
+    const q = editandoEv ? sb.from("game_events").update(fila).eq("id", editandoEv.id) : sb.from("game_events").insert(fila);
+    const { error } = await q;
+    $("ev-guardar").disabled = false;
+    if (error) {
+      const m = /row-level security|permission denied/i.test(error.message) ? "Tu cuenta no es de desarrollador." :
+        /game_events_xp_mult_check|column "xp_mult"/i.test(error.message) ? "Falta actualizar el servidor (PASO 7)." : textoError(error);
+      msg("m-evento", m, "error"); return;
+    }
+    const st = estadoEv(fila);
+    filtroEv = st;
+    cerrarFormEvento();
+    msg("m-eventos", eraEdicion ? "Cambios guardados." : st === "curso" ? `"${nombre}" ya está activo. Los jugadores lo ven al abrir el juego.` : `"${nombre}" quedó programado.`, "ok");
+    cargarEventos();
+  });
+  armarFormEvento();
 
   // ---------------------------------------------------------------- Arranque
   sb.auth.getSession().then(({ data }) => { if (!data.session) pantalla("acceso"); });
