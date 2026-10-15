@@ -259,6 +259,13 @@
   .resultado.ok { background: #dff3e6; color: #1f6b3e; }
   .resultado.no { background: #f6e3dc; color: #8a3520; }
   @media (max-width: 760px) { .grid3 { grid-template-columns: 1fr 1fr; } }
+  /* Términos y privacidad */
+  .check { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; font-weight: 500; margin: 12px 0 0; flex-basis: 100%; cursor: pointer; }
+  .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--noche); cursor: pointer; }
+  .check a, .legal a, .pie a { color: #8a5a10; }
+  .legal { text-align: center; margin-top: 12px; }
+  .pie { text-align: center; color: var(--suave); font-size: 14px; margin-top: 28px; }
+  #t-terminos { border: 2px solid var(--oro); background: #fff8e8; }
   .pin { width: 34px; height: 34px; border-radius: 50% 50% 50% 0; background: var(--oro); border: 3px solid var(--noche); transform: rotate(-45deg); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
   .pin::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--noche); }
 
@@ -370,6 +377,15 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/><path d="m13.5 4-3 16"/></svg>
       Desarrollador</button>
   </nav>
+  <!-- Aceptación de los términos para cafeterías (dueños que todavía no aceptaron esta versión) -->
+  <div class="tarjeta oculto" id="t-terminos" role="region" aria-label="Términos para cafeterías">
+    <h2>Términos para cafeterías</h2>
+    <p class="sub" style="margin-bottom:4px">Publicamos los términos de Tazadores para cafeterías. Léelos y acéptalos para seguir usando el panel con tu cafetería.</p>
+    <label class="check"><input type="checkbox" id="tc-acepto"> <span>Leí y acepto los <a href="terminos.html#cafeterias" target="_blank" rel="noopener">Términos para cafeterías</a> y la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> en nombre de mi cafetería.</span></label>
+    <div class="fila" style="margin-top:12px"><button class="btn oro" type="button" id="tc-aceptar">Aceptar</button></div>
+    <p class="msg" id="m-terminos" role="status"></p>
+  </div>
+
   <!-- Acceso -->
   <section id="v-acceso" class="acceso oculto">
     <div class="tarjeta">
@@ -377,6 +393,7 @@
       <p class="sub">Sube tu logo, tu promoción y mira cuántos jugadores te visitan.</p>
       <button class="btn ancho google" type="button" id="b-google"><b class="g" aria-hidden="true">G</b> Continuar con Google</button>
       <p class="msg" id="m-google" role="status"></p>
+      <p class="ayuda legal">Al continuar aceptas los <a href="terminos.html" target="_blank" rel="noopener">Términos y condiciones</a> y la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>.</p>
       <details id="d-correo" class="correo-antiguo">
         <summary>Entrar con correo y contraseña (cuentas antiguas)</summary>
       <div class="pestanas" role="tablist" style="display:none">
@@ -423,6 +440,7 @@
       <form id="f-reclamar" class="fila">
         <input id="r-codigo" type="text" maxlength="12" placeholder="Ej.: 17ABAD29" style="max-width:220px; text-transform:uppercase" required autocomplete="off" aria-label="Código de la cafetería">
         <button class="btn" type="submit">Reclamar</button>
+        <label class="check"><input type="checkbox" id="r-acepto"> <span>Soy el dueño o tengo permiso, y acepto los <a href="terminos.html#cafeterias" target="_blank" rel="noopener">Términos para cafeterías</a> y la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>.</span></label>
       </form>
       <p class="msg" id="m-reclamar" role="status"></p>
     </div>
@@ -833,6 +851,8 @@
       </div>
     </div>
   </section>
+
+  <footer class="pie">Tazadores · Tarija, Bolivia · <a href="terminos.html">Términos y condiciones</a> · <a href="privacidad.html">Privacidad</a> · <a href="mailto:tazadores@gmail.com">tazadores@gmail.com</a></footer>
 </main>
 
 <!-- QR de caja -->
@@ -879,7 +899,8 @@
   const PALETA = ["#6F4E37", "#B5523B", "#2F6E5E", "#1F4E79", "#8A3B5C", "#C27C2C", "#4B3F72", "#2E7D4F"];
   const RAREZA = { comun: ["Común", "#c9b48d"], rara: ["Rara", "#4fd1c5"], epica: ["Épica", "#c590ff"] };
 
-  let sesion = null, esAdmin = false, actual = null, mapa = null, pin = null, circulo = null;
+  let sesion = null, esAdmin = false, actual = null, mapa = null, pin = null, circulo = null, misLugares = [];
+  const TERMINOS_VERSION = "2026-10-15";   // cambiarla obliga a aceptar de nuevo (terminos.html y privacidad.html)
 
   // ---------------------------------------------------------------- Utilidades
   function colorDe(nombre) {
@@ -1004,6 +1025,7 @@
     for (const v of ["acceso", "inicio", "dev", "editor"]) mostrar("v-" + v, v === nombre);
     const dentro = nombre !== "acceso";
     if (nombre === "inicio" || nombre === "dev") vistaLista = nombre;
+    if (nombre === "acceso") mostrar("t-terminos", false);
     mostrar("vistas", esAdmin && (nombre === "inicio" || nombre === "dev"));
     $("ir-inicio").setAttribute("aria-pressed", String(nombre === "inicio"));
     $("ir-dev").setAttribute("aria-pressed", String(nombre === "dev"));
@@ -1025,6 +1047,7 @@
       if (guardada === "dev") pantalla("dev");
     }
     await cargarMias();
+    revisarTerminosCafe();
     mostrar("t-admin", esAdmin);
     mostrar("t-reto", esAdmin);
     mostrar("t-reportes", esAdmin);
@@ -1063,6 +1086,7 @@
     const lista = $("l-mias"); lista.innerHTML = "";
     const { data, error } = await sb.from("places").select("*").eq("owner_id", sesion.user.id).order("name");
     if (error) { lista.textContent = textoError(error); return; }
+    misLugares = data || [];
     if (!data.length) {
       $("s-mias").textContent = "Todavía no tienes cafeterías. Reclama la tuya con su código.";
       return;
@@ -1131,15 +1155,42 @@
   }
   $("buscar").addEventListener("input", pintarAdmin);
 
+  // ---------------------------------------------------------------- Términos para cafeterías
+  // Queda registrado en el servidor quién aceptó qué versión y cuándo (tabla consents).
+  async function aceptarTerminos(tipo) {
+    const { data, error } = await sb.rpc("accept_terms", { p_kind: tipo, p_version: TERMINOS_VERSION });
+    if (error) return /Could not find the function|PGRST202/i.test(error.message);   // servidor sin el PASO 8: no se bloquea
+    return !!(data && data.ok);
+  }
+  async function revisarTerminosCafe() {
+    mostrar("t-terminos", false);
+    if (!misLugares.length) return;
+    const { data, error } = await sb.rpc("terms_accepted", { p_kind: "cafeteria" });
+    if (error) return;
+    mostrar("t-terminos", data !== TERMINOS_VERSION);
+  }
+  $("tc-aceptar").onclick = async () => {
+    if (!$("tc-acepto").checked) { msg("m-terminos", "Marca la casilla para aceptar.", "error"); return; }
+    $("tc-aceptar").disabled = true;
+    const ok = await aceptarTerminos("cafeteria");
+    $("tc-aceptar").disabled = false;
+    if (!ok) { msg("m-terminos", "No se pudo guardar. Prueba de nuevo.", "error"); return; }
+    msg("m-terminos");
+    mostrar("t-terminos", false);
+  };
+
   $("f-reclamar").addEventListener("submit", async (ev) => {
     ev.preventDefault();
+    if (!$("r-acepto").checked) { msg("m-reclamar", "Para reclamar tu cafetería, acepta los términos para cafeterías.", "error"); return; }
     msg("m-reclamar", "Revisando…");
+    await aceptarTerminos("cafeteria");
     const { data, error } = await sb.rpc("claim_place", { p_code: $("r-codigo").value.trim() });
     if (error) { msg("m-reclamar", textoError(error), "error"); return; }
     if (!data || !data.length) { msg("m-reclamar", "Código no válido. Revísalo y prueba de nuevo.", "error"); return; }
     msg("m-reclamar", `¡Listo! Ahora administras ${data[0].name}.`, "ok");
-    $("r-codigo").value = "";
+    $("r-codigo").value = ""; $("r-acepto").checked = false;
     await cargarMias();
+    revisarTerminosCafe();
     abrir(data[0].id);
   });
 

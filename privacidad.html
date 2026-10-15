@@ -4,53 +4,89 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad · Tazadores</title>
+<meta name="description" content="Qué datos usa Tazadores, para qué, con quién se comparten y cómo borrarlos.">
 <style>
-  :root { --crema: #FBF6EC; --noche: #12233A; --oro: #D9962B; --suave: #5F6B7A; }
+  :root { --crema: #FBF6EC; --noche: #12233A; --oro: #B5791A; --suave: #5F6B7A; --linea: #E4DCCD; }
   body { margin: 0; background: var(--crema); color: var(--noche); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
   main { max-width: 760px; margin: 0 auto; padding: 32px 18px 60px; }
-  h1 { font-size: 30px; margin: 0 0 4px; } h2 { font-size: 21px; margin-top: 32px; color: var(--oro); }
+  h1 { font-size: 30px; line-height: 1.2; margin: 0 0 4px; }
+  h2 { font-size: 21px; margin-top: 32px; color: var(--oro); }
   .sub { color: var(--suave); margin: 0 0 24px; }
   li { margin: 6px 0; }
+  a { color: #8a5a10; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; background: #fff; border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { font-size: 13px; color: var(--suave); }
+  footer { margin-top: 44px; color: var(--suave); font-size: 15px; }
 </style>
 </head>
 <body>
 <main>
   <h1>Política de privacidad de Tazadores</h1>
-  <p class="sub">Última actualización: 15 de octubre de 2026</p>
+  <p class="sub">Versión 2026-10-15 · Última actualización: 15 de octubre de 2026</p>
 
-  <p>Tazadores es un juego para celulares que se juega caminando por la ciudad de Tarija (Bolivia). Esta página explica qué datos usa el juego, para qué y cómo puedes borrarlos.</p>
+  <p>Tazadores es un juego para celulares que se juega caminando por la ciudad de Tarija (Bolivia), con un panel web para las cafeterías asociadas. Esta página explica qué datos usamos, para qué, con quién se comparten y cómo puedes borrarlos. Junto con los <a href="terminos.html">Términos y condiciones</a>, son las reglas de Tazadores.</p>
 
-  <h2>Datos que usamos</h2>
+  <h2>Responsable y consentimiento</h2>
+  <p>El responsable de tus datos es Tazadores (Tarija, Bolivia). Puedes escribirnos a <a href="mailto:tazadores@gmail.com">tazadores@gmail.com</a>. Usamos tus datos solo con tu consentimiento previo, expreso e informado, que das al tocar <b>«Acepto»</b> antes de jugar (o en el panel, si administras una cafetería). Puedes retirarlo cuando quieras borrando tu cuenta.</p>
+
+  <h2>Datos de los jugadores</h2>
   <ul>
-    <li><b>Cuenta:</b> se entra con tu cuenta de <b>Google</b>. Google nos envía solo tu nombre y tu correo (nunca tu contraseña) para crear tu cuenta y guardar tu progreso. Tu nombre de jugador empieza siendo tu primer nombre y lo puedes cambiar en Ajustes.</li>
-    <li><b>Ubicación:</b> el juego usa el GPS para mostrarte en el mapa, hacer aparecer Granitos y paradas cerca de ti y validar los check-in en cafeterías. Guardamos la ubicación aproximada de cada captura, parada y check-in para evitar trampas y para el progreso de barrios y retos.</li>
+    <li><b>Cuenta:</b> se entra con tu cuenta de <b>Google</b>. Google nos envía solo tu nombre y tu correo (nunca tu contraseña) para crear tu cuenta y guardar tu progreso. Tu nombre de jugador empieza siendo tu primer nombre y lo puedes cambiar una sola vez en Ajustes.</li>
+    <li><b>Ubicación:</b> el juego usa el GPS para mostrarte en el mapa, hacer aparecer Granitos y paradas cerca de ti y validar los check-in en cafeterías. Guardamos la ubicación aproximada de cada captura, parada y check-in para evitar trampas y para el progreso de barrios y retos. El juego también detecta si el celular usa una ubicación falsa.</li>
     <li><b>Progreso del juego:</b> Granitos atrapados, objetos, medallas, amigos, postales, cupones y ranking.</li>
     <li><b>Cámara:</b> se usa para leer el QR de la caja y para ver Granitos sobre la cámara. Las imágenes no se envían a nuestros servidores. Las fotos que sacas se guardan solo en tu celular, y las compartes tú si quieres.</li>
     <li><b>Reportes de problemas:</b> si usas <i>Ajustes &gt; Reportar un problema</i>, guardamos tu mensaje, el tema, la captura de pantalla del juego (solo si eliges adjuntarla), el modelo de tu celular, la versión del juego y tu ubicación aproximada, para poder arreglar el problema. Solo el equipo de Tazadores los ve.</li>
+    <li><b>Aceptación de las reglas:</b> guardamos qué versión de los términos y de esta política aceptaste y cuándo.</li>
     <li><b>Notificaciones:</b> avisos del bono diario y de tus semillas, que se programan en tu propio celular.</li>
+  </ul>
+
+  <h2>Datos de las cafeterías (panel)</h2>
+  <ul>
+    <li>El correo de la cuenta de quien administra la cafetería.</li>
+    <li>Los datos que la cafetería publica: nombre, logo, fotos, descripción, dirección, ubicación, horario, redes sociales, teléfono, cupones y promociones.</li>
+    <li>Las solicitudes de plan premium y su estado.</li>
   </ul>
 
   <h2>Con quién se comparten</h2>
   <ul>
     <li>No vendemos tus datos ni los usamos para publicidad.</li>
-    <li>Los datos se guardan en <b>Supabase</b>, el servicio que usamos como servidor (con conexión cifrada).</li>
+    <li>Los datos se guardan en <b>Supabase</b>, el servicio que usamos como servidor, en centros de datos fuera de Bolivia y con conexión cifrada.</li>
     <li>El clima real lo consulta nuestro servidor al <b>Instituto Meteorológico de Noruega (MET Norway)</b> con las coordenadas de la ciudad de Tarija. Tu celular no se conecta con ellos y no les enviamos ningún dato tuyo.</li>
-    <li>Si entras con Google, el inicio de sesión lo hace <b>Google</b> según su propia política de privacidad.</li>
+    <li>El inicio de sesión lo hace <b>Google</b>, según su propia política de privacidad.</li>
     <li>Las cafeterías asociadas solo ven estadísticas generales (cantidad de visitas, horas con más visitas, cupones canjeados), nunca tu correo ni tu ubicación.</li>
-    <li>Tus amigos ven tu nombre de jugador, tu nivel y tu compañero.</li>
+    <li>Tus amigos ven tu nombre de jugador, tu nivel y tu compañero. En el ranking aparece tu nombre de jugador.</li>
+    <li>Solo entregaríamos datos a una autoridad si una orden judicial lo exige.</li>
   </ul>
 
-  <h2>Cómo borrar tus datos</h2>
-  <p>Dentro del juego: <b>Menú &gt; Ajustes &gt; Borrar mi cuenta</b>. Se borran tu cuenta y todo tu progreso de forma inmediata y permanente.</p>
+  <h2>Cookies y almacenamiento en tu dispositivo</h2>
+  <p>Tazadores <b>no usa cookies de publicidad ni de analítica</b> y no sigue lo que haces en otras páginas o apps. Solo se guarda lo necesario para que el juego y el panel funcionen:</p>
+  <table>
+    <tr><th>Dónde</th><th>Qué se guarda</th><th>Para qué</th></tr>
+    <tr><td>Juego (en tu celular)</td><td>Tu sesión y tus ajustes (música, vibración, brújula, ahorro de batería)</td><td>No pedirte entrar cada vez y recordar tus preferencias</td></tr>
+    <tr><td>Panel (en tu navegador)</td><td>Tu sesión y la última pestaña que usaste</td><td>No pedirte entrar cada vez</td></tr>
+  </table>
+  <p>Como todo esto es necesario para el servicio, no hace falta un aviso de cookies. El panel carga tipografías de Google Fonts y bibliotecas de cdnjs y jsDelivr, que, como cualquier página web, reciben la dirección IP de tu conexión. Si algún día agregamos cookies que no sean necesarias, te pediremos permiso antes.</p>
+
+  <h2>Cuánto tiempo los guardamos</h2>
+  <p>Mientras tengas una cuenta. Al borrarla se eliminan tu cuenta, tu progreso y tu registro de aceptación. Los reportes de problemas que enviaste se conservan sin estar vinculados a tu cuenta, para poder terminar de arreglar el problema. Si administras una cafetería, al borrar tu cuenta la cafetería sigue publicada sin administrador hasta que su dueño la reclame de nuevo.</p>
+
+  <h2>Tus derechos</h2>
+  <p>Puedes pedirnos ver tus datos, corregirlos o borrarlos, y retirar tu consentimiento, escribiendo a <a href="mailto:tazadores@gmail.com">tazadores@gmail.com</a>. Te respondemos en un plazo máximo de 15 días. También puedes borrar tu cuenta tú mismo: dentro del juego, <b>Menú &gt; Ajustes &gt; Borrar mi cuenta</b>. Se borran tu cuenta y todo tu progreso de forma inmediata y permanente. Estos derechos se basan en la Constitución Política del Estado (artículos 21, 130 y 131) y en el Decreto Supremo 1793.</p>
 
   <h2>Menores de edad</h2>
-  <p>Tazadores está pensado para personas mayores de 13 años. Si eres menor, juega con el permiso y la compañía de un adulto.</p>
+  <p>Tazadores es para personas desde los 13 años. Si eres menor de 18, juega con el permiso de tu madre, padre o tutor. Si sabemos que una cuenta es de alguien menor de 13 años, la borramos.</p>
 
   <h2>Juega con cuidado</h2>
   <p>Presta atención a tu alrededor mientras juegas y no uses el celular al cruzar la calle o al manejar.</p>
 
+  <h2>Cambios a esta política</h2>
+  <p>Si cambiamos algo importante, el juego o el panel te pedirán que lo aceptes de nuevo. La fecha de arriba indica la última versión.</p>
+
   <h2>Contacto</h2>
   <p>Si tienes preguntas sobre esta política o sobre tus datos, escríbenos a <a href="mailto:tazadores@gmail.com">tazadores@gmail.com</a>.</p>
+
+  <footer>Tazadores · Tarija, Bolivia · <a href="terminos.html">Términos y condiciones</a> · <a href="descargar.html">Descargar el juego</a></footer>
 </main>
 </body>
 </html>
