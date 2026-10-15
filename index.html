@@ -92,6 +92,10 @@
   /* Acceso */
   .acceso { max-width: 420px; margin: 4vh auto 0; }
   .pestanas { display: flex; background: #efe7d8; border-radius: 12px; padding: 4px; margin-bottom: 8px; }
+  .btn.google { background: #fff; color: #1f1f1f; border: 1px solid #cdbfa6; font-size: 16px; min-height: 52px; margin-top: 6px; }
+  .btn.google .g { color: #4285f4; font-size: 20px; margin-right: 8px; }
+  .correo-antiguo { margin-top: 18px; border-top: 1px solid var(--linea); padding-top: 12px; }
+  .correo-antiguo summary { cursor: pointer; color: var(--suave); font-size: 14px; }
   .pestanas button { flex: 1; border: 0; background: transparent; padding: 10px; border-radius: 9px; cursor: pointer; font-weight: 600; color: var(--suave); }
   .pestanas button[aria-selected=true] { background: #fff; color: var(--noche); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
 
@@ -280,7 +284,11 @@
     <div class="tarjeta">
       <h1>Tu cafetería en Tazadores</h1>
       <p class="sub">Sube tu logo, tu promoción y mira cuántos jugadores te visitan.</p>
-      <div class="pestanas" role="tablist">
+      <button class="btn ancho google" type="button" id="b-google"><b class="g" aria-hidden="true">G</b> Continuar con Google</button>
+      <p class="msg" id="m-google" role="status"></p>
+      <details id="d-correo" class="correo-antiguo">
+        <summary>Entrar con correo y contraseña (cuentas antiguas)</summary>
+      <div class="pestanas" role="tablist" style="display:none">
         <button role="tab" id="tab-entrar" aria-selected="true">Entrar</button>
         <button role="tab" id="tab-crear" aria-selected="false">Crear cuenta</button>
       </div>
@@ -294,10 +302,11 @@
         <label for="a-clave">Contraseña</label>
         <input id="a-clave" type="password" required minlength="6" autocomplete="current-password">
         <button class="btn oro ancho" style="margin-top:18px" id="b-acceso" type="submit">Entrar</button>
-        <p class="ayuda">Puedes usar la misma cuenta que en el juego.</p>
+        <p class="ayuda">Las cuentas nuevas se crean con Google. Este acceso queda para las cuentas que ya existían.</p>
         <button class="btn-link" type="button" id="b-olvide" style="color:var(--noche); padding-left:0">¿Olvidaste tu contraseña?</button>
         <p class="msg" id="m-acceso" role="status"></p>
       </form>
+      </details>
       <form id="f-nueva" class="oculto">
         <h2>Nueva contraseña</h2>
         <p class="sub">Escribe tu nueva contraseña (mínimo 6 caracteres).</p>
@@ -759,6 +768,21 @@
 
   $("salir").onclick = async () => { await sb.auth.signOut(); };
 
+  // Entrar con Google (la forma normal de entrar; vuelve a esta misma página con la sesión)
+  async function googleActivo() {
+    try {
+      const r = await fetch(SUPABASE_URL + "/auth/v1/settings", { headers: { apikey: SUPABASE_ANON_KEY } });
+      const j = await r.json();
+      return !!(j.external && j.external.google);
+    } catch (e) { return true; }
+  }
+  $("b-google").onclick = async () => {
+    msg("m-google", "Abriendo Google…");
+    if (!(await googleActivo())) { msg("m-google", "El inicio con Google todavía no está activado. Mientras tanto, entra con correo abajo.", "error"); $("d-correo").open = true; return; }
+    const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + location.pathname } });
+    if (error) msg("m-google", textoError(error), "error");
+  };
+
   // Recuperar contraseña: se manda un correo con un enlace que vuelve a esta página.
   $("b-olvide").onclick = async () => {
     const email = $("a-correo").value.trim();
@@ -784,6 +808,7 @@
     if (evento === "PASSWORD_RECOVERY") {
       recuperando = true; sesion = s;
       pantalla("acceso");
+      $("d-correo").open = true;
       mostrar("f-acceso", false); document.querySelector(".pestanas").classList.add("oculto");
       mostrar("f-nueva", true);
       return;
