@@ -575,6 +575,7 @@
       <div id="mt-vencen"></div>
       <p class="msg" id="m-metricas" role="status"></p>
     </div>
+      <div class="tarjeta oculto mt-root" id="t-tienda"></div>
 
     <div class="tarjeta oculto" id="t-solicitudes">
       <h2>Solicitudes de premium <span class="chip" id="sl-cuenta">0</span> <span class="chip">Administrador</span></h2>
@@ -1163,6 +1164,7 @@
   async function cargarAdmin() {
     if (window.cargarRutas) cargarRutas();
     if (typeof cargarJefes === "function") cargarJefes();
+    if (window.cargarTienda) cargarTienda();
     cargarReto();
     cargarReportes();
     cargarMetricas();
@@ -2317,5 +2319,6 @@
 <script src="js/competencias.js"></script>
 <script src="js/rutas.js"></script>
 <script src="js/jefes.js"></script>
+<script src="js/tienda.js"></script>
 </body>
 </html>
