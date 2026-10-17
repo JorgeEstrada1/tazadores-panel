@@ -548,7 +548,9 @@
       </form>
     </div>
 
-    <div class="tarjeta oculto mt-root" id="t-metricas">
+    <div class="tarjeta oculto" id="t-jefes"></div>
+      <div id="rutas-anchor"></div>
+      <div class="tarjeta oculto mt-root" id="t-metricas">
       <h2>Cómo va Tazadores <span class="chip">Administrador</span></h2>
       <p class="sub">Jugadores, capturas y visitas a cafeterías. Se actualiza cada vez que entras.</p>
       <div class="fila" style="margin-bottom:6px">
@@ -796,6 +798,8 @@
       <p class="vacio-estado oculto" id="mj-pronto">Los minijuegos se activan pronto.</p>
       <p class="msg" id="m-minijuegos" role="status"></p>
     </div>
+
+    <div id="cmp-competencias"></div>
 
     <div class="secciones">
       <div class="tarjeta">
@@ -1157,6 +1161,8 @@
   });
 
   async function cargarAdmin() {
+    if (window.cargarRutas) cargarRutas();
+    if (typeof cargarJefes === "function") cargarJefes();
     cargarReto();
     cargarReportes();
     cargarMetricas();
@@ -1254,6 +1260,7 @@
     cargarEstadisticas();
     cargarInsights();
     cargarMinijuegos();
+    if (window.cargarCompetencias) cargarCompetencias();
     pintarPlan();
     prepararMapa();
   }
@@ -2307,5 +2314,8 @@
   // ---------------------------------------------------------------- Arranque
   sb.auth.getSession().then(({ data }) => { if (!data.session) pantalla("acceso"); });
 </script>
+<script src="js/competencias.js"></script>
+<script src="js/rutas.js"></script>
+<script src="js/jefes.js"></script>
 </body>
 </html>
