@@ -1920,12 +1920,18 @@
 
 
   // ---------------------------------------------------------------- Eventos (Desarrollador)
-  const ESPECIES = [
-    ["arabica", "Arábica", "comun"], ["robusta", "Robusta", "comun"], ["espresso", "Espressito", "comun"], ["cortado", "Cortadito", "comun"],
-    ["capuchino", "Capuchino", "comun"], ["latte", "Lattecito", "comun"], ["americano", "Americano", "comun"],
-    ["moka", "Moka", "rara"], ["macchiato", "Macchiato", "rara"], ["frappe", "Frappé", "rara"], ["cascarita", "Cascarita", "rara"],
-    ["geisha", "Geisha", "epica"], ["bourbon", "Bourbon", "epica"],
+  const ESPECIES = [   // Generación 1 (igual que species_catalog en el servidor)
+    ["arabica", "Arábica", "comun"], ["cortado", "Cortadito", "comun"], ["capuchino", "Capuchino", "rara"],
+    ["robusta", "Robusta", "comun"], ["americano", "Americano", "comun"], ["moka", "Moka", "rara"],
+    ["espresso", "Espressito", "comun"], ["macchiato", "Macchiato", "rara"], ["latte", "Lattecito", "comun"], ["frappe", "Frappé", "rara"],
+    ["florcita", "Florcita", "comun"], ["cascarita", "Cascarita", "rara"], ["geisha", "Geisha", "epica"],
+    ["hielito", "Hielito", "comun"], ["coldbrew", "Cold Brew", "comun"], ["nitro", "Nitro", "rara"],
+    ["cacaito", "Cacaíto", "comun"], ["chocolatito", "Chocolatito", "rara"], ["jarrita", "Jarrita", "comun"], ["espumon", "Espumón", "rara"],
+    ["molinillo", "Molinillo", "comun"], ["prensita", "Prensita", "comun"], ["chemex", "Chemex", "rara"], ["italianita", "Italianita", "comun"],
+    ["terroncito", "Terroncito", "comun"], ["caramelon", "Caramelón", "rara"], ["rosquete", "Rosquetito", "comun"],
+    ["empanada", "Empanadita", "comun"], ["alfajor", "Alfajorcito", "comun"], ["bourbon", "Bourbon", "epica"], ["caranavi", "Caranavi", "epica"],
   ];
+
   const NOMBRE_ESPECIE = Object.fromEntries(ESPECIES.map(([id, n]) => [id, n]));
   const GORROS = [["", "Sin gorro"], ["fiesta", "De fiesta"], ["navidad", "Navideño"], ["chapaco", "Sombrero chapaco"], ["calavera", "Calavera"]];
   const XPS = [[1, "Normal"], [1.5, "×1,5"], [2, "×2"], [3, "×3"]];
@@ -1940,6 +1946,8 @@
     { t: "Doble XP de fin de semana", nombre: "Fin de semana de Doble XP", desc: "¡Todo da el doble de XP hasta el domingo por la noche!", xp: 2, color: "C27C2C", fin: finDeSemana },
     { t: "Noche de Espressitos", nombre: "Noche de Espressitos", desc: "Salen muchos más Espressitos y Mokas. ¡Sal a cazar de noche!", especies: ["espresso", "moka"], color: "1F4E79", dias: 3 },
     { t: "Lluvia de raros", nombre: "Lluvia de Granitos raros", desc: "Macchiatos, Frappés y Cascaritas por todo Tarija, y ×1,5 XP.", especies: ["macchiato", "frappe", "cascarita"], xp: 1.5, color: "6B4FA0", dias: 2 },
+    { t: "Feria de masitas", nombre: "Feria de masitas tarijeñas", desc: "Rosquetitos, Empanaditas y Alfajorcitos salen por toda la ciudad.", especies: ["rosquete", "empanada", "alfajor"], color: "B5523B", dias: 2 },
+    { t: "Ola de frío", nombre: "Ola de frío", desc: "Chocolatitos, Capuchinos y Mokas buscan calorcito. ×1,5 XP.", especies: ["chocolatito", "capuchino", "moka", "cacaito"], xp: 1.5, color: "1F4E79", dias: 3 },
     { t: "Fiesta chapaca", nombre: "Fiesta chapaca", desc: "Los Granitos se ponen sombrero chapaco y aparece más el Bourbon.", especies: ["bourbon", "macchiato"], gorro: "chapaco", color: "B5523B", dias: 7 },
   ];
 
