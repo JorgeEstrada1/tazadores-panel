@@ -259,6 +259,21 @@
   .resultado.ok { background: #dff3e6; color: #1f6b3e; }
   .resultado.no { background: #f6e3dc; color: #8a3520; }
   @media (max-width: 760px) { .grid3 { grid-template-columns: 1fr 1fr; } }
+  /* Minijuegos */
+  .juegos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 12px; }
+  .juego { background: #fff; border: 1px solid var(--linea); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+  .juego h3 { margin: 0; }
+  .juego .cifra { font-size: 13px; color: var(--suave); margin: 0 0 6px; }
+  .juego ol { list-style: none; margin: 0; padding: 0; }
+  .juego li { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--linea); font-size: 14px; }
+  .juego li:first-child { border-top: 0; }
+  .juego .pos { width: 30px; flex: none; font-weight: 700; color: var(--suave); font-variant-numeric: tabular-nums; }
+  .juego .pos.uno { color: #b5791a; }
+  .juego .jug { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .juego .pts { font-weight: 700; color: var(--noche); font-variant-numeric: tabular-nums; }
+  .juego .nadie { font-size: 14px; color: var(--suave); margin: 4px 0 0; }
+  .juego li .btn.chico { min-height: 30px; padding: 3px 10px; font-size: 13px; }
+  @media (max-width: 760px) { .juegos { grid-template-columns: 1fr; } }
   /* Términos y privacidad */
   .check { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; font-weight: 500; margin: 12px 0 0; flex-basis: 100%; cursor: pointer; }
   .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--noche); cursor: pointer; }
@@ -766,6 +781,22 @@
       </details>
     </div>
 
+    <div class="tarjeta" id="t-minijuegos">
+      <h2>Minijuegos</h2>
+      <p class="sub">Tus clientes juegan 4 minijuegos en tu cafetería y compiten por ser el #1. Solo cuentan los puntajes hechos en tu local.</p>
+      <div id="mj-datos">
+        <div class="numeros" style="grid-template-columns:repeat(3, 1fr)">
+          <div class="numero"><b id="mj-7">0</b><span>Partidas (7 días)</span></div>
+          <div class="numero"><b id="mj-30">0</b><span>Partidas (30 días)</span></div>
+          <div class="numero"><b id="mj-jug">0</b><span>Jugadores (30 días)</span></div>
+        </div>
+        <div class="juegos" id="l-minijuegos"></div>
+        <p class="ayuda">Idea: anuncia en tu local un premio para el campeón del mes (por ejemplo, un café gratis).</p>
+      </div>
+      <p class="vacio-estado oculto" id="mj-pronto">Los minijuegos se activan pronto.</p>
+      <p class="msg" id="m-minijuegos" role="status"></p>
+    </div>
+
     <div class="secciones">
       <div class="tarjeta">
         <h2>Visitas</h2>
@@ -1202,7 +1233,7 @@
     if (error) { alertar(textoError(error)); return; }
     actual = data;
     pantalla("editor");
-    for (const m of ["m-logo", "m-datos", "m-ubic"]) msg(m);
+    for (const m of ["m-logo", "m-datos", "m-ubic", "m-minijuegos"]) msg(m);
     pintarEncabezado();
     $("d-nombre").value = actual.name || "";
     $("d-desc").value = actual.description || "";
@@ -1222,6 +1253,7 @@
     cargarCupones();
     cargarEstadisticas();
     cargarInsights();
+    cargarMinijuegos();
     pintarPlan();
     prepararMapa();
   }
@@ -1771,6 +1803,65 @@
       : "Todavía no hay suficientes visitas para ver tus horas pico.";
     const nombres = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
     barras("g-dias", "e-dias", d.weekdays || [], nombres, (i, v) => `${nombres[i]}: ${v} check-ins`);
+  }
+
+  // ---------------------------------------------------------------- Minijuegos
+  const MINIJUEGOS = { espresso: "Espresso perfecto", granos: "Lluvia de granos", barista: "Barista rápido", latte: "Arte latte" };
+  async function cargarMinijuegos() {
+    const id = actual.id;
+    const { data: d, error } = await sb.rpc("place_minigames", { p_place: id });
+    if (!actual || actual.id !== id) return;
+    const listo = !error && d && d.ok;
+    mostrar("mj-datos", listo);
+    mostrar("mj-pronto", !listo);
+    if (!listo) { $("mj-pronto").textContent = (!error && d && d.message) || "Los minijuegos se activan pronto."; return; }
+    $("mj-7").textContent = d.plays7 || 0;
+    $("mj-30").textContent = d.plays30 || 0;
+    $("mj-jug").textContent = d.players30 || 0;
+    const porJuego = Object.fromEntries((d.games || []).map((g) => [g.game, g]));
+    const l = $("l-minijuegos"); l.innerHTML = "";
+    for (const juego of Object.keys(MINIJUEGOS)) l.append(tablaMinijuego(juego, porJuego[juego] || {}));
+  }
+  function tablaMinijuego(juego, g) {
+    const caja = document.createElement("div"); caja.className = "juego";
+    const h = document.createElement("h3"); h.textContent = MINIJUEGOS[juego];
+    const p7 = +g.plays7 || 0, jug = +g.players || 0;
+    const cifra = document.createElement("p"); cifra.className = "cifra";
+    cifra.textContent = `${p7} ${p7 === 1 ? "partida" : "partidas"} (7 días) · ${jug} ${jug === 1 ? "jugador" : "jugadores"} en la tabla`;
+    caja.append(h, cifra);
+    const top = g.top || [];
+    if (!top.length) {
+      const v = document.createElement("p"); v.className = "nadie"; v.textContent = "Todavía nadie jugó aquí.";
+      caja.append(v); return caja;
+    }
+    const ol = document.createElement("ol");
+    for (const r of top) {
+      const li = document.createElement("li");
+      const pos = document.createElement("span"); pos.className = "pos" + (r.rank === 1 ? " uno" : ""); pos.textContent = "#" + r.rank;
+      const nom = document.createElement("span"); nom.className = "jug"; nom.textContent = r.name || "Jugador"; nom.title = r.name || "Jugador";
+      const pts = document.createElement("span"); pts.className = "pts"; pts.textContent = (+r.score || 0).toLocaleString("es-BO");
+      li.append(pos, nom, pts);
+      if (esAdmin && r.user) {
+        const quitar = document.createElement("button"); quitar.type = "button"; quitar.className = "btn peligro chico"; quitar.textContent = "Quitar";
+        quitar.onclick = () => quitarPuntaje(juego, r, quitar);
+        li.append(quitar);
+      }
+      ol.append(li);
+    }
+    caja.append(ol);
+    return caja;
+  }
+  function quitarPuntaje(juego, r, boton) {
+    dosToques(boton, "¿Quitar? Toca otra vez", async () => {
+      boton.disabled = true;
+      const { data, error } = await sb.rpc("admin_minigame_remove", { p_place: actual.id, p_game: juego, p_user: r.user });
+      if (error || !data || !data.ok) {
+        msg("m-minijuegos", error ? textoError(error) : (data && data.message) || "No se pudo quitar el puntaje.", "error");
+        boton.disabled = false; return;
+      }
+      msg("m-minijuegos", `Se quitó el puntaje de ${r.name || "Jugador"} en ${MINIJUEGOS[juego]}.`, "ok");
+      cargarMinijuegos();
+    });
   }
 
   // ---------------------------------------------------------------- Aroma de cafetería
