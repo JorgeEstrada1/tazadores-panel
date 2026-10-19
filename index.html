@@ -549,6 +549,7 @@
     </div>
 
     <div class="tarjeta oculto" id="t-jefes"></div>
+    <div id="temporadas-anchor"></div>
       <div id="rutas-anchor"></div>
       <div class="tarjeta oculto mt-root" id="t-metricas">
       <h2>Cómo va Tazadores <span class="chip">Administrador</span></h2>
@@ -704,6 +705,8 @@
       </div>
     </div>
 
+    <div id="hf-hora-feliz"></div>
+
     <form class="tarjeta" id="f-casa">
       <h2>Granito de la casa</h2>
       <div class="casa">
@@ -786,7 +789,7 @@
 
     <div class="tarjeta" id="t-minijuegos">
       <h2>Minijuegos</h2>
-      <p class="sub">Tus clientes juegan 4 minijuegos en tu cafetería y compiten por ser el #1. Solo cuentan los puntajes hechos en tu local.</p>
+      <p class="sub">Tus clientes juegan 5 minijuegos en tu cafetería y compiten por ser el #1. Solo cuentan los puntajes hechos en tu local.</p>
       <div id="mj-datos">
         <div class="numeros" style="grid-template-columns:repeat(3, 1fr)">
           <div class="numero"><b id="mj-7">0</b><span>Partidas (7 días)</span></div>
@@ -801,6 +804,8 @@
     </div>
 
     <div id="cmp-competencias"></div>
+    <div id="origen-anchor"></div>
+    <div id="sello-tarjeta"></div>
 
     <div class="secciones">
       <div class="tarjeta">
@@ -1162,6 +1167,7 @@
   });
 
   async function cargarAdmin() {
+    if (window.cargarTemporadas) cargarTemporadas();
     if (window.cargarRutas) cargarRutas();
     if (typeof cargarJefes === "function") cargarJefes();
     if (window.cargarTienda) cargarTienda();
@@ -1258,11 +1264,14 @@
     $("u-visible").checked = !!actual.active;
     $("r-canje").classList.add("oculto");
     cargarAroma();
+    if (window.cargarHoraFeliz) cargarHoraFeliz();
     cargarCupones();
     cargarEstadisticas();
     cargarInsights();
     cargarMinijuegos();
     if (window.cargarCompetencias) cargarCompetencias();
+    if (window.cargarOrigen) cargarOrigen();
+    if (window.cargarSellos) cargarSellos();
     pintarPlan();
     prepararMapa();
   }
@@ -1815,7 +1824,7 @@
   }
 
   // ---------------------------------------------------------------- Minijuegos
-  const MINIJUEGOS = { espresso: "Espresso perfecto", granos: "Lluvia de granos", barista: "Barista rápido", latte: "Arte latte" };
+  const MINIJUEGOS = { espresso: "Espresso perfecto", granos: "Lluvia de granos", barista: "Barista rápido", latte: "Arte latte", cata: "Cata a ciegas" };
   async function cargarMinijuegos() {
     const id = actual.id;
     const { data: d, error } = await sb.rpc("place_minigames", { p_place: id });
@@ -2320,5 +2329,9 @@
 <script src="js/rutas.js"></script>
 <script src="js/jefes.js"></script>
 <script src="js/tienda.js"></script>
+<script src="js/horafeliz.js"></script>
+<script src="js/origen.js"></script>
+<script src="js/sellos.js"></script>
+<script src="js/temporadas.js"></script>
 </body>
 </html>

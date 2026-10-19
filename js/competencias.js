@@ -7,7 +7,7 @@
 (function () {
   "use strict";
 
-  const JUEGOS = { espresso: "Espresso perfecto", granos: "Lluvia de granos", barista: "Barista rápido", latte: "Arte latte" };
+  const JUEGOS = { espresso: "Espresso perfecto", granos: "Lluvia de granos", barista: "Barista rápido", latte: "Arte latte", cata: "Cata a ciegas" };
   const ZONA = "America/La_Paz";
   const OFFSET = "-04:00";            // Bolivia no tiene horario de verano
   const SIN_SERVIDOR = /Could not find the function|PGRST202/i;
@@ -93,7 +93,7 @@
         <div id="cmp-cuerpo">
           <div class="cmp-bloque">
             <h3>Campeón del mes</h3>
-            <p class="ayuda" style="margin:0 0 4px">Cuando termina el mes, el #1 de cada uno de los 4 juegos gana este premio. Cuenta su mejor partida del mes en tu cafetería; si empatan, gana quien llegó primero.</p>
+            <p class="ayuda" style="margin:0 0 4px">Cuando termina el mes, el #1 de cada uno de los 5 juegos gana este premio. Cuenta su mejor partida del mes en tu cafetería; si empatan, gana quien llegó primero.</p>
             <form id="cmp-f-mes" class="cmp-fila">
               <div class="crece">
                 <label for="cmp-mes-premio">Premio</label>
@@ -288,7 +288,7 @@
       const ganadores = p.winners || [];
       if (!ganadores.length) {
         const tr = el("tr");
-        tr.append(el("td", null, periodo), el("td", null, p.kind === "torneo" ? (p.gameName || "") : "Los 4 juegos"),
+        tr.append(el("td", null, periodo), el("td", null, p.kind === "torneo" ? (p.gameName || JUEGOS[p.game] || "") : "Todos los juegos"),
           el("td", null, "Nadie jugó"), el("td", "cmp-premio", p.prize), el("td", null, "—"));
         body.append(tr);
         continue;
