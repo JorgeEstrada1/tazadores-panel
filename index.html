@@ -614,6 +614,7 @@
       </form>
     </div>
 
+    <div id="errores-anchor"></div>
     <div class="tarjeta oculto" id="t-reportes">
       <h2>Reportes de jugadores <span class="chip">Administrador</span></h2>
       <p class="sub">Problemas que los jugadores enviaron desde el juego, con su captura de pantalla.</p>
@@ -1182,6 +1183,7 @@
     if (window.cargarRutas) cargarRutas();
     if (typeof cargarJefes === "function") cargarJefes();
     if (window.cargarTienda) cargarTienda();
+    if (window.cargarErrores) cargarErrores();
     cargarReto();
     cargarReportes();
     cargarMetricas();
@@ -2351,5 +2353,6 @@
 <script src="js/avisos.js"></script>
 <script src="js/pro.js"></script>
 <script src="js/destacadas.js"></script>
+<script src="js/errores.js"></script>
 </body>
 </html>
